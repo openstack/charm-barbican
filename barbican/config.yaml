@@ -43,6 +43,6 @@ options:
     type: string
     description: OpenStack Region
   keystone-api-version:
-    default: "2"
+    default: "3"
     type: string
-    description: none  2 or 
+    description: none,  2 or 3
