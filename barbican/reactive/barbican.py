@@ -99,12 +99,11 @@ def setup_database(database):
 @when('identity-service.connected')
 def setup_endpoint(keystone):
 
-    CONFIGS = 'bob'
-    public_url = '{}:{}'.format(canonical_url(CONFIGS, PUBLIC),
+    public_url = '{}:{}'.format(canonical_url(PUBLIC),
                                 api_port('barbican-public-api'))
-    admin_url = '{}:{}'.format(canonical_url(CONFIGS, ADMIN),
+    admin_url = '{}:{}'.format(canonical_url(ADMIN),
                                api_port('barbican-admin-api'))
-    internal_url = '{}:{}'.format(canonical_url(CONFIGS, INTERNAL),
+    internal_url = '{}:{}'.format(canonical_url(INTERNAL),
                                   api_port('barbican-internal-api')
                                   )
     keystone.register_endpoints('secretstore', config('region'), public_url,
