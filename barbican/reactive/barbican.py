@@ -71,26 +71,22 @@ class BarbicanConfigurationAdapter(ConfigurationAdapter):
             return "unauthenticated-context apiapp"
 
 
-# TODO: write superclass and move shared methods
-class BarbicanCharm(object):
+class OpenStackCharm(object):
 
-    packages =  [
-        'barbican-common',
-        'barbican-api',
-        'barbican-worker',
-        'python-mysqldb'
-    ]
+    packages = []
+    """Packages to install"""
 
-    api_ports = {
-        'barbican-api': {
-            PUBLIC: 9311,
-            ADMIN: 9312,
-            INTERNAL: 9313,
-        }
-    }
+    api_ports = {}
+    """
+    Dictionary mapping services to ports for public, admin and
+    internal endpoints
+    """
 
-    service_type = 'secretstore'
-    default_service = 'barbican-api'
+    service_type = None
+    """Keystone endpoint type"""
+
+    default_service = None
+    """Default service for the charm"""
 
     def __init__(self):
         self.config = config()
@@ -141,25 +137,56 @@ class BarbicanCharm(object):
                                             INTERNAL))
 
 
-# TODO: write superclass and move shared methods
-class BarbicanCharmFactory(object):
+class BarbicanCharm(OpenStackCharm):
 
-    releases = {
-        'liberty': BarbicanCharm
+    packages =  [
+        'barbican-common',
+        'barbican-api',
+        'barbican-worker',
+        'python-mysqldb'
+    ]
+
+    api_ports = {
+        'barbican-api': {
+            PUBLIC: 9311,
+            ADMIN: 9312,
+            INTERNAL: 9313,
+        }
     }
+
+    service_type = 'secretstore'
+    default_service = 'barbican-api'
+
+
+class OpenStackCharmFactory(object):
+
+    releases = {}
     """
     Dictionary mapping OpenStack releases to their associated
     Charm class for this charm
     """
 
+    first_release = "icehouse"
+    """
+    First OpenStack release which this factory supports Charms for
+    """
+
     @classmethod
     def charm(cls, release=None):
-        # TODO: make this series based for resolution
-        #       of charm class
+        """Get the right charm for the configured OpenStack series"""
         if release and release in cls.releases:
             return cls.release[release]
         else:
-            return cls.release['liberty']
+            return cls.release[cls.first_release]
+
+
+class BarbicanCharmFactory(OpenStackCharmFactory):
+
+    releases = {
+        'liberty': BarbicanCharm
+    }
+
+    first_release = 'liberty'
 
 
 @hook('install')
