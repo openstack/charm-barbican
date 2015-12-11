@@ -20,5 +20,6 @@ secret = barbican.secrets.create(name='Self destruction sequence',
                                  payload_content_type='text/plain')
 secret.store()
 print(secret.secret_ref)
+ref = secret.secret_ref.replace('localhost', barbican_ip)
 retrieved_secret = barbican.secrets.get(secret.secret_ref)
 print(retrieved_secret.payload)
