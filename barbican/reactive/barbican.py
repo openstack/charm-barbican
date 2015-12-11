@@ -22,6 +22,7 @@ from charmhelpers.core.templating import render
 from charmhelpers.core.hookenv import unit_private_ip
 from charmhelpers.contrib.openstack.templating import get_loader
 from charmhelpers.contrib.openstack.utils import os_release
+from charmhelpers.core.host import restart_on_change
 
 API_PORTS = {
     'barbican-api': 9311,
@@ -112,6 +113,9 @@ def setup_endpoint(keystone):
 @when('shared-db.available')
 @when('identity-service.available')
 @when('amqp.available')
+@restart_on_change({
+    '/etc/barbican/barbican*': [ 'barbican-api', 'barbican-worker' ]
+})
 def render_stuff(*args):
     adapters = BarbicanAdapters(args)
     #release = os_release('barbican-common')
