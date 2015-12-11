@@ -20,6 +20,9 @@ from charmhelpers.core.hookenv import config
 from charmhelpers.core.hookenv import status_set
 from charmhelpers.core.templating import render
 from charmhelpers.core.hookenv import unit_private_ip
+from charmhelpers.contrib.openstack.templating import get_loader
+from charmhelpers.contrib.openstack.utils import os_release
+
 API_PORTS = {
     'barbican-api': 9311,
     'barbican-public-api': 9311,
@@ -80,14 +83,16 @@ def setup_endpoint(keystone):
     keystone.register_endpoints('keystore', config('region'), public_url,
                                 internal_url, admin_url)
 
-
-@when('database.available')
+@when('shared-db.available')
 @when('identity-service.available')
 @when('amqp.available')
-def conf_amqp_req(*args):
+def render_stuff(*args):
     adapters = BarbicanAdapters(args)
+    #release = os_release('barbican-common')
+    release = os_release('python-keystonemiddleware')
     for conf in [BARBICAN_ADMIN_PASTE_CONF, BARBICAN_API_CONF,
                  BARBICAN_API_PASTE_CONF]:
         render(source=conf,
+               template_loader=get_loader('templates/', release),
                target='{}/{}'.format(BARBICAN_DIR, conf),
                context=adapters)
