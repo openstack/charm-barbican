@@ -71,17 +71,103 @@ class BarbicanConfigurationAdapter(ConfigurationAdapter):
             return "unauthenticated-context apiapp"
 
 
-def api_port(service):
-    return API_PORTS[service]
+# TODO: write superclass and move shared methods
+class BarbicanCharm(object):
+
+    packages =  [
+        'barbican-common',
+        'barbican-api',
+        'barbican-worker',
+        'python-mysqldb'
+    ]
+
+    api_ports = {
+        'barbican-api': {
+            PUBLIC: 9311,
+            ADMIN: 9312,
+            INTERNAL: 9313,
+        }
+    }
+
+    service_type = 'secretstore'
+    default_service = 'barbican-api'
+
+    def __init__(self):
+        self.config = config()
+
+    def install(self):
+        """
+        Install packages related to this charm based on
+        contents of packages attribute.
+        """
+        packages = filter_installed_packages(self.packages)
+        if packages:
+            status_set('maintenance', 'Installing packages')
+            apt_install(packages, fatal=True)
+
+    def api_port(self, service, endpoint_type=PUBLIC):
+        """
+        Determine the API port for a particular endpoint type
+        """
+        return self.api_ports[service][endpoint_type]
+
+    def configure_source(self):
+        """Configure installation source"""
+        configure_installation_source(self.config['openstack-origin'])
+        apt_update(fatal=True)
+
+    @property
+    def region(self):
+        """OpenStack Region"""
+        return self.config['region']
+
+    @property
+    def public_url(self):
+        """Public Endpoint URL"""
+        return "{}:{}".format(canonical_url(PUBLIC),
+                              self.api_port(self.default_service,
+                                            PUBLIC))
+    @property
+    def admin_url(self):
+        """Admin Endpoint URL"""
+        return "{}:{}".format(canonical_url(ADMIN),
+                              self.api_port(self.default_service,
+                                            ADMIN))
+    @property
+    def internal_url(self):
+        """Internal Endpoint URL"""
+        return "{}:{}".format(canonical_url(INTERNAL),
+                              self.api_port(self.default_service,
+                                            INTERNAL))
+
+
+# TODO: write superclass and move shared methods
+class BarbicanCharmFactory(object):
+
+    releases = {
+        'liberty': BarbicanCharm
+    }
+    """
+    Dictionary mapping OpenStack releases to their associated
+    Charm class for this charm
+    """
+
+    @classmethod
+    def charm(cls, release=None):
+        # TODO: make this series based for resolution
+        #       of charm class
+        if release and release in cls.releases:
+            return cls.release[release]
+        else:
+            return cls.release['liberty']
 
 
 @hook('install')
 def install_packages():
-    status_set('maintenance', 'Installing packages')
+    charm = BarbicanCharmFactory.charm()
     add_source("ppa:gnuoy/barbican-alt")
-    configure_installation_source(config('openstack-origin'))
-    apt_update()
-    apt_install(filter_installed_packages(PACKAGES))
+    charm.configure_source()
+    charm.install()
 
 
 @when('amqp.connected')
@@ -98,16 +184,12 @@ def setup_database(database):
 
 @when('identity-service.connected')
 def setup_endpoint(keystone):
-
-    public_url = '{}:{}'.format(canonical_url(PUBLIC),
-                                api_port('barbican-public-api'))
-    admin_url = '{}:{}'.format(canonical_url(ADMIN),
-                               api_port('barbican-admin-api'))
-    internal_url = '{}:{}'.format(canonical_url(INTERNAL),
-                                  api_port('barbican-internal-api')
-                                  )
-    keystone.register_endpoints('secretstore', config('region'), public_url,
-                                internal_url, admin_url)
+    charm = BarbicanCharmFactory.charm()
+    keystone.register_endpoints(charm.service_type,
+                                charm.region,
+                                charm.public_url,
+                                charm.internal_url,
+                                charm.admin_url)
 
 @when('shared-db.available')
 @when('identity-service.available')
@@ -116,6 +198,7 @@ def setup_endpoint(keystone):
     '/etc/barbican/barbican*': [ 'barbican-api', 'barbican-worker' ]
 })
 def render_stuff(*args):
+    charm = BarbicanCharmFactory.charm()
     adapters = BarbicanAdapters(args)
     #release = os_release('barbican-common')
     release = os_release('python-keystonemiddleware')
