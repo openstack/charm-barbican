@@ -13,15 +13,16 @@ openstack-services:
       branch: lp:~openstack-charmers/charms/trusty/rabbitmq-server/next
       constraints: mem=1G
     keystone:
-      branch: lp:~openstack-charmers/charms/trusty/keystone/next
+      branch: lp:~gnuoy/charms/trusty/keystone/secret-store
       constraints: mem=1G
       options:
         admin-password: openstack
         admin-token: ubuntutesting
+        openstack-origin: cloud:trusty-kilo
     barbican:
       charm: barbican
       options:
-        openstack-origin: cloud:trusty-liberty
+        openstack-origin: cloud:trusty-kilo
   relations:
     - [ keystone, mysql ]
     - [ barbican, mysql ]

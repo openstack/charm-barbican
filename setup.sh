@@ -1,7 +1,7 @@
 #!/bin/bash
 export http_proxy=http://squid.internal:3128                                                              
 export https_proxy=http://squid.internal:3128
-export JUJU_REPOSITORY=build
+export JUJU_REPOSITORY="$(pwd)/build"
 #export INTERFACE_PATH=interfaces
 export LAYER_PATH=layers
 rm -rf $JUJU_REPOSITORY

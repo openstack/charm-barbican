@@ -1,4 +1,4 @@
-from openstack.adapters import OpenStackRelationAdapters
+from openstack.adapters import OpenStackRelationAdapters, ConfigurationAdapter
 from openstack.ip import canonical_url, PUBLIC, INTERNAL, ADMIN
 from charmhelpers.contrib.openstack.utils import (
     configure_installation_source,
@@ -41,7 +41,33 @@ class BarbicanAdapters(OpenStackRelationAdapters):
     """
     Adapters class for the Barbican charm.
     """
-    pass
+    def __init__(self, relations):
+        super(BarbicanAdapters, self).__init__(relations, options=BarbicanConfigurationAdapter)
+
+
+class BarbicanConfigurationAdapter(ConfigurationAdapter):
+
+    def __init__(self):
+        super(BarbicanConfigurationAdapter, self).__init__()
+        if config('keystone-api-version') not in ['2', '3', 'none']:
+            raise ValueError('Unsupported keystone-api-version (%s). Should'
+                             'be 2 or 3' % (config('keystone-api-version')))
+        
+    @property
+    def barbican_api_keystone_pipeline(self):
+        if config('keystone-api-version') == "2":
+            return 'keystone_authtoken context apiapp'
+        else:
+            return 'keystone_v3_authtoken context apiapp'
+
+    @property
+    def barbican_api_pipeline(self):
+        if config('keystone-api-version') == "2":
+            return "keystone_authtoken context apiapp"
+        elif config('keystone-api-version') == "3":
+            return "keystone_v3_authtoken context apiapp"
+        elif config('keystone-api-version') == "none":
+            return "unauthenticated-context apiapp"
 
 
 def api_port(service):
@@ -80,7 +106,7 @@ def setup_endpoint(keystone):
     internal_url = '{}:{}'.format(canonical_url(CONFIGS, INTERNAL),
                                   api_port('barbican-internal-api')
                                   )
-    keystone.register_endpoints('keystore', config('region'), public_url,
+    keystone.register_endpoints('secretstore', config('region'), public_url,
                                 internal_url, admin_url)
 
 @when('shared-db.available')
