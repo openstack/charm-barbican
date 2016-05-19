@@ -1,8 +1,13 @@
 # this is just for the reactive handlers and calls into the charm.
 from __future__ import absolute_import
+from __future__ import print_function
+
+import sys
+sys.path.append('lib')
 
 import charms.reactive as reactive
 
+print(sys.path)
 # This charm's library contains all of the handler code
 import charm.openstack.barbican as barbican
 
