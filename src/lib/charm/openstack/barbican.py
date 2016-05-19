@@ -4,9 +4,13 @@
 # needed on the class.
 from __future__ import absolute_import
 
+import charmhelpers.fetch
+import charmhelpers.core.hookenv as hookenv
+import charmhelpers.contrib.openstack.utils as ch_utils
+
 import charm.openstack.charm
 import charm.openstack.adapters
-import charmhelpers.fetch
+import charm.openstack.ip as os_ip
 
 PACKAGES = ['barbican-common', 'barbican-api', 'barbican-worker',
             'python-mysqldb']
@@ -30,16 +34,17 @@ def setup_amqp_req(amqp):
     """Use the amqp interface to request access to the amqp broker using our
     local configuration.
     """
-    amqp.request_access(username=config('rabbit-user'),
-                        vhost=config('rabbit-vhost'))
+    amqp.request_access(username=hookenv.config('rabbit-user'),
+                        vhost=hookenv.config('rabbit-vhost'))
 
 
 def setup_database(database):
     """On receiving database credentials, configure the database on the
     interface.
     """
-    database.configure(config('database'), config('database-user'),
-                       unit_private_ip())
+    database.configure(hookenv.config('database'),
+                       hookenv.config('database-user'),
+                       hookenv.unit_private_ip())
 
 
 def setup_endpoint(keystone):
@@ -64,11 +69,11 @@ def render_configs(interfaces_list):
 ###
 # Implementation of the Barbican Charm classes
 
-class BarbicanConfigurationAdapater(
+class BarbicanConfigurationAdapter(
         charm.openstack.adapters.ConfigurationAdapter):
 
     def __init__(self):
-        super(BarbicanConfigurationAdapater, self).__init__()
+        super(BarbicanConfigurationAdapter, self).__init__()
         if self.keystone_api_version not in ['2', '3', 'none']:
             raise ValueError(
                 "Unsupported keystone-api-version ({}). It should be 2 or 3"
@@ -107,17 +112,15 @@ class BarbicanCharm(charm.openstack.charm.OpenStackCharm):
     functionality to manage a barbican unit.
     """
 
-    releases = {
-        'liberty': BarbicanCharm
-    }
+    # don't set releases here (as we need to self refer - see below)
     first_release = 'liberty'
     name = 'barbican'
     packages = PACKAGES
     api_ports = {
         'barbican-api': {
-            PUBLIC: 9311,
-            ADMIN: 9312,
-            INTERNAL: 9313,
+            os_ip.PUBLIC: 9311,
+            os_ip.ADMIN: 9312,
+            os_ip.INTERNAL: 9313,
         }
     }
     service_type = 'secretstore'
@@ -136,13 +139,12 @@ class BarbicanCharm(charm.openstack.charm.OpenStackCharm):
         """Custom initialiser for class
 
         If no release is passed, then the charm determines the release from the
-        os_release() function.
+        ch_utils.os_release() function.
         """
         if release is None:
-            #release = os_release('barbican-common')
-            release = os_release('python-keystonemiddleware')
+            # release = ch_utils.os_release('barbican-common')
+            release = ch_utils.os_release('python-keystonemiddleware')
         super(BarbicanCharm, self).__init__(release=release, **kwargs)
-
 
     def install(self):
         """Customise the installation, configure the source and then call the
@@ -152,3 +154,11 @@ class BarbicanCharm(charm.openstack.charm.OpenStackCharm):
         self.configure_source()
         # and do the actual install
         super(BarbicanCharm, self).install()
+
+
+# Set Barbican releases here because we need it to refer to itself. For derived
+# classes of BarbicanCharm for different series we would still set the releases
+# here.
+BarbicanCharm.releases = {
+    'liberty': BarbicanCharm,
+}

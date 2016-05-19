@@ -3,13 +3,17 @@ from __future__ import absolute_import
 from __future__ import print_function
 
 import sys
-sys.path.append('lib')
+sys.path.append('src/lib')
 
 import charms.reactive as reactive
 
 print(sys.path)
+import os
+print(os.getcwd())
+print(os.path.dirname(os.path.realpath(__file__)))
 # This charm's library contains all of the handler code
 import charm.openstack.barbican as barbican
+
 
 # use a synthetic state to ensure that it get it to be installed independent of
 # the install hook.
