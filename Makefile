@@ -1,7 +1,8 @@
 #!/usr/bin/make
+LAYER_PATH := layers
 
 clean:
-	rm -Rf build
+	rm -Rf build .tox
 
 generate: clean
-	tox -e generate
+	LAYER_PATH=$(LAYER_PATH) tox -e generate
