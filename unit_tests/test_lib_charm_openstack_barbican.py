@@ -138,7 +138,7 @@ class TestBarbicanAdapters(Helper):
         self.assertTrue(
             isinstance(
                 b.other,
-                barbican.charmers.openstack.adapters.OpenStackRelationAdapter))
+                barbican.charms_openstack.adapters.OpenStackRelationAdapter))
         self.assertTrue(isinstance(b.options,
                                    barbican.BarbicanConfigurationAdapter))
 
@@ -153,9 +153,9 @@ class TestBarbicanCharm(Helper):
     def test_install(self):
         self.patch(barbican.charmhelpers.fetch, 'add_source')
         b = barbican.BarbicanCharm()
-        self.patch(barbican.charmers.openstack.charm.OpenStackCharm,
+        self.patch(barbican.charms_openstack.charm.OpenStackCharm,
                    'configure_source')
-        self.patch(barbican.charmers.openstack.charm.OpenStackCharm,
+        self.patch(barbican.charms_openstack.charm.OpenStackCharm,
                    'install')
         b.install()
         self.add_source.assert_called_once_with('ppa:gnuoy/barbican-alt')
