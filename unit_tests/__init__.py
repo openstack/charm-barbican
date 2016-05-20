@@ -1,7 +1,11 @@
 import sys
 import mock
 
+sys.path.append('src')
+sys.path.append('src/lib')
 
+# Mock out charmhelpers so that we can test without it.
+# also stops sideeffects from occuring.
 charmhelpers = mock.MagicMock()
 sys.modules['charmhelpers'] = charmhelpers
 sys.modules['charmhelpers.core'] = charmhelpers.core

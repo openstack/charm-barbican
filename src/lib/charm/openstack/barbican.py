@@ -135,7 +135,7 @@ class BarbicanCharm(charmers.openstack.charm.OpenStackCharm):
 
     adapters_class = BarbicanAdapters
 
-    def __init__(self, release=None, *kwargs):
+    def __init__(self, release=None, **kwargs):
         """Custom initialiser for class
 
         If no release is passed, then the charm determines the release from the
