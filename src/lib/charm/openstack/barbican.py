@@ -8,9 +8,9 @@ import charmhelpers.fetch
 import charmhelpers.core.hookenv as hookenv
 import charmhelpers.contrib.openstack.utils as ch_utils
 
-import charm.openstack.charm
-import charm.openstack.adapters
-import charm.openstack.ip as os_ip
+import charmers.openstack.charm
+import charmers.openstack.adapters
+import charmers.openstack.ip as os_ip
 
 PACKAGES = ['barbican-common', 'barbican-api', 'barbican-worker',
             'python-mysqldb']
@@ -70,7 +70,7 @@ def render_configs(interfaces_list):
 # Implementation of the Barbican Charm classes
 
 class BarbicanConfigurationAdapter(
-        charm.openstack.adapters.ConfigurationAdapter):
+        charmers.openstack.adapters.ConfigurationAdapter):
 
     def __init__(self):
         super(BarbicanConfigurationAdapter, self).__init__()
@@ -95,7 +95,7 @@ class BarbicanConfigurationAdapter(
         }[self.keystone_api_version]
 
 
-class BarbicanAdapters(charm.openstack.adapters.OpenStackRelationAdapters):
+class BarbicanAdapters(charmers.openstack.adapters.OpenStackRelationAdapters):
     """
     Adapters class for the Barbican charm.
 
@@ -107,7 +107,7 @@ class BarbicanAdapters(charm.openstack.adapters.OpenStackRelationAdapters):
             relations, options=BarbicanConfigurationAdapter)
 
 
-class BarbicanCharm(charm.openstack.charm.OpenStackCharm):
+class BarbicanCharm(charmers.openstack.charm.OpenStackCharm):
     """BarbicanCharm provides the specialisation of the OpenStackCharm
     functionality to manage a barbican unit.
     """
