@@ -1,13 +1,10 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
-import sys
 import unittest
 
 import mock
 
-sys.path.append('src')
-sys.path.append('src/lib')
 import reactive.barbican_handlers as handlers
 
 
