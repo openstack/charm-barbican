@@ -11,13 +11,15 @@ import reactive.barbican_handlers as handlers
 _when_args = {}
 _when_not_args = {}
 
+
 def mock_hook_factory(d):
 
     def mock_hook(*args, **kwargs):
 
         def inner(f):
-            # remember what we were passed.  Note that we can't actually determine
-            # the class we're attached to, as the decorator only gets the function.
+            # remember what we were passed.  Note that we can't actually
+            # determine the class we're attached to, as the decorator only gets
+            # the function.
             try:
                 d[f.__name__].append(dict(args=args, kwargs=kwargs))
             except KeyError:
@@ -35,7 +37,7 @@ class TestBarbicanHandlers(unittest.TestCase):
                                        mock_hook_factory(_when_args))
         cls._patched_when_started = cls._patched_when.start()
         cls._patched_when_not = mock.patch('charms.reactive.when_not',
-                                            mock_hook_factory(_when_not_args))
+                                           mock_hook_factory(_when_not_args))
         cls._patched_when_not_started = cls._patched_when_not.start()
         # force requires to rerun the mock_hook decorator:
         reload(handlers)
@@ -63,7 +65,7 @@ class TestBarbicanHandlers(unittest.TestCase):
         self._patches_start = None
 
     def patch(self, obj, attr, return_value=None):
-        mocked = mock.patch.object(obj , attr)
+        mocked = mock.patch.object(obj, attr)
         self._patches[attr] = mocked
         started = mocked.start()
         started.return_value = return_value

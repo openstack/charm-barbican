@@ -22,7 +22,7 @@ class Helper(unittest.TestCase):
         self._patches_start = None
 
     def patch(self, obj, attr, return_value=None):
-        mocked = mock.patch.object(obj , attr)
+        mocked = mock.patch.object(obj, attr)
         self._patches[attr] = mocked
         started = mocked.start()
         started.return_value = return_value
@@ -147,11 +147,11 @@ class TestBarbicanCharm(Helper):
 
     def test__init__(self):
         self.patch(barbican.ch_utils, 'os_release')
-        b = barbican.BarbicanCharm()
+        barbican.BarbicanCharm()
         self.os_release.assert_called_once_with('python-keystonemiddleware')
 
     def test_install(self):
-        self.patch(barbican.charmhelpers.fetch,'add_source')
+        self.patch(barbican.charmhelpers.fetch, 'add_source')
         b = barbican.BarbicanCharm()
         self.patch(barbican.charmers.openstack.charm.OpenStackCharm,
                    'configure_source')
