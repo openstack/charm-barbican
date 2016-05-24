@@ -21,8 +21,8 @@ class Helper(unittest.TestCase):
         self._patches = None
         self._patches_start = None
 
-    def patch(self, obj, attr, return_value=None):
-        mocked = mock.patch.object(obj, attr)
+    def patch(self, obj, attr, return_value=None, **kwargs):
+        mocked = mock.patch.object(obj, attr, **kwargs)
         self._patches[attr] = mocked
         started = mocked.start()
         started.return_value = return_value
@@ -33,9 +33,9 @@ class Helper(unittest.TestCase):
 class TestOpenStackBarbican(Helper):
 
     def test_install(self):
-        self.patch(barbican.BarbicanCharm, 'singleton')
+        self.patch(barbican.BarbicanCharm.singleton, 'install')
         barbican.install()
-        self.singleton.install.assert_called_once_with()
+        self.install.assert_called_once_with()
 
     def test_setup_amqp_req(self):
         amqp = mock.MagicMock()
@@ -63,21 +63,30 @@ class TestOpenStackBarbican(Helper):
             'db1', 'dbuser1', 'private_ip')
 
     def test_setup_endpoint(self):
-        self.patch(barbican.BarbicanCharm, 'singleton')
-        self.singleton.service_type = 'type1'
-        self.singleton.region = 'region1'
-        self.singleton.public_url = 'public_url'
-        self.singleton.internal_url = 'internal_url'
-        self.singleton.admin_url = 'admin_url'
+        self.patch(barbican.BarbicanCharm, 'service_type',
+                   new_callable=mock.PropertyMock)
+        self.patch(barbican.BarbicanCharm, 'region',
+                   new_callable=mock.PropertyMock)
+        self.patch(barbican.BarbicanCharm, 'public_url',
+                   new_callable=mock.PropertyMock)
+        self.patch(barbican.BarbicanCharm, 'internal_url',
+                   new_callable=mock.PropertyMock)
+        self.patch(barbican.BarbicanCharm, 'admin_url',
+                   new_callable=mock.PropertyMock)
+        self.service_type.return_value = 'type1'
+        self.region.return_value = 'region1'
+        self.public_url.return_value = 'public_url'
+        self.internal_url.return_value = 'internal_url'
+        self.admin_url.return_value = 'admin_url'
         keystone = mock.MagicMock()
         barbican.setup_endpoint(keystone)
         keystone.register_endpoints.assert_called_once_with(
             'type1', 'region1', 'public_url', 'internal_url', 'admin_url')
 
     def test_render_configs(self):
-        self.patch(barbican.BarbicanCharm, 'singleton')
+        self.patch(barbican.BarbicanCharm.singleton, 'render_with_interfaces')
         barbican.render_configs('interfaces-list')
-        self.singleton.render_interfaces.assert_called_once_with(
+        self.render_with_interfaces.assert_called_once_with(
             'interfaces-list')
 
 

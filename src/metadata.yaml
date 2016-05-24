@@ -5,7 +5,7 @@ description: |
  Barbican is a REST API designed for the secure storage, provisioning and
  management of secrets such as passwords and encryption keys. It is aimed at
  being useful for all environments, including large ephemeral Clouds
-categories:
+tags:
   - openstack
 subordinate: false
 provides:

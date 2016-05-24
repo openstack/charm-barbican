@@ -40,7 +40,13 @@ class TestBarbicanHandlers(unittest.TestCase):
                                            mock_hook_factory(_when_not_args))
         cls._patched_when_not_started = cls._patched_when_not.start()
         # force requires to rerun the mock_hook decorator:
-        reload(handlers)
+        # try except is Python2/Python3 compatibility as Python3 has moved
+        # reload to importlib.
+        try:
+            reload(handlers)
+        except NameError:
+            import importlib
+            importlib.reload(handlers)
 
     @classmethod
     def tearDownClass(cls):
@@ -51,7 +57,11 @@ class TestBarbicanHandlers(unittest.TestCase):
         cls._patched_when_not_started = None
         cls._patched_when_not = None
         # and fix any breakage we did to the module
-        reload(handlers)
+        try:
+            reload(handlers)
+        except NameError:
+            import importlib
+            importlib.reload(handlers)
 
     def setUp(self):
         self._patches = {}

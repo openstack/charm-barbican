@@ -63,7 +63,7 @@ def render_configs(interfaces_list):
     """Using a list of interfaces, render the configs and, if they have
     changes, restart the services on the unit.
     """
-    BarbicanCharm.singleton.render_interfaces(interfaces_list)
+    BarbicanCharm.singleton.render_with_interfaces(interfaces_list)
 
 
 ###
@@ -112,8 +112,7 @@ class BarbicanCharm(charms_openstack.charm.OpenStackCharm):
     functionality to manage a barbican unit.
     """
 
-    # don't set releases here (as we need to self refer - see below)
-    first_release = 'liberty'
+    release = 'liberty'
     name = 'barbican'
     packages = PACKAGES
     api_ports = {
@@ -123,7 +122,7 @@ class BarbicanCharm(charms_openstack.charm.OpenStackCharm):
             os_ip.INTERNAL: 9313,
         }
     }
-    service_type = 'secretstore'
+    service_type = 'barbican'
     default_service = 'barbican-api'
     services = ['barbican-api', 'barbican-worker']
 
@@ -154,11 +153,3 @@ class BarbicanCharm(charms_openstack.charm.OpenStackCharm):
         self.configure_source()
         # and do the actual install
         super(BarbicanCharm, self).install()
-
-
-# Set Barbican releases here because we need it to refer to itself. For derived
-# classes of BarbicanCharm for different series we would still set the releases
-# here.
-BarbicanCharm.releases = {
-    'liberty': BarbicanCharm,
-}
