@@ -5,7 +5,6 @@
 from __future__ import absolute_import
 
 import charmhelpers.fetch
-import charmhelpers.core.hookenv as hookenv
 import charmhelpers.contrib.openstack.utils as ch_utils
 
 import charms_openstack.charm
@@ -28,23 +27,6 @@ def install():
     unit
     """
     BarbicanCharm.singleton.install()
-
-
-def setup_amqp_req(amqp):
-    """Use the amqp interface to request access to the amqp broker using our
-    local configuration.
-    """
-    amqp.request_access(username=hookenv.config('rabbit-user'),
-                        vhost=hookenv.config('rabbit-vhost'))
-
-
-def setup_database(database):
-    """On receiving database credentials, configure the database on the
-    interface.
-    """
-    database.configure(hookenv.config('database'),
-                       hookenv.config('database-user'),
-                       hookenv.unit_private_ip())
 
 
 def setup_endpoint(keystone):

@@ -37,31 +37,6 @@ class TestOpenStackBarbican(Helper):
         barbican.install()
         self.install.assert_called_once_with()
 
-    def test_setup_amqp_req(self):
-        amqp = mock.MagicMock()
-        self.patch(barbican.hookenv, 'config')
-        reply = {
-            'rabbit-user': 'user1',
-            'rabbit-vhost': 'vhost1',
-        }
-        self.config.side_effect = lambda x: reply[x]
-        barbican.setup_amqp_req(amqp)
-        amqp.request_access.assert_called_once_with(
-            username='user1', vhost='vhost1')
-
-    def test_database(self):
-        database = mock.MagicMock()
-        self.patch(barbican.hookenv, 'config')
-        reply = {
-            'database': 'db1',
-            'database-user': 'dbuser1',
-        }
-        self.config.side_effect = lambda x: reply[x]
-        self.patch(barbican.hookenv, 'unit_private_ip', 'private_ip')
-        barbican.setup_database(database)
-        database.configure.assert_called_once_with(
-            'db1', 'dbuser1', 'private_ip')
-
     def test_setup_endpoint(self):
         self.patch(barbican.BarbicanCharm, 'service_type',
                    new_callable=mock.PropertyMock)
@@ -92,12 +67,12 @@ class TestOpenStackBarbican(Helper):
 
 class TestBarbicanConfigurationAdapter(Helper):
 
-    def test_barbican_configuration_adapter(self):
-        self.patch(barbican.hookenv, 'config')
+    @mock.patch('charmhelpers.core.hookenv.config')
+    def test_barbican_configuration_adapter(self, config):
         reply = {
             'keystone-api-version': '2',
         }
-        self.config.side_effect = lambda: reply
+        config.side_effect = lambda: reply
         # Make one with no errors, api version 2
         a = barbican.BarbicanConfigurationAdapter()
         self.assertEqual(a.barbican_api_keystone_pipeline,
@@ -126,12 +101,12 @@ class TestBarbicanConfigurationAdapter(Helper):
 
 class TestBarbicanAdapters(Helper):
 
-    def test_barbican_adapters(self):
-        self.patch(barbican.hookenv, 'config')
+    @mock.patch('charmhelpers.core.hookenv.config')
+    def test_barbican_adapters(self, config):
         reply = {
             'keystone-api-version': '2',
         }
-        self.config.side_effect = lambda: reply
+        config.side_effect = lambda: reply
         amqp_relation = mock.MagicMock()
         amqp_relation.relation_name = 'amqp'
         shared_db_relation = mock.MagicMock()

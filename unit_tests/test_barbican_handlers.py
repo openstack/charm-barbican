@@ -115,14 +115,29 @@ class TestBarbicanHandlers(unittest.TestCase):
         self.set_state.assert_called_once_with('charm.installed')
 
     def test_setup_amqp_req(self):
-        self.patch(handlers.barbican, 'setup_amqp_req')
-        handlers.setup_amqp_req('amqp_object')
-        self.setup_amqp_req.assert_called_once_with('amqp_object')
+        amqp = mock.MagicMock()
+        self.patch(handlers.hookenv, 'config')
+        reply = {
+            'rabbit-user': 'user1',
+            'rabbit-vhost': 'vhost1',
+        }
+        self.config.side_effect = lambda x: reply[x]
+        handlers.setup_amqp_req(amqp)
+        amqp.request_access.assert_called_once_with(
+            username='user1', vhost='vhost1')
 
-    def test_setup_database(self):
-        self.patch(handlers.barbican, 'setup_database')
-        handlers.setup_database('keystone_object')
-        self.setup_database.assert_called_once_with('keystone_object')
+    def test_database(self):
+        database = mock.MagicMock()
+        self.patch(handlers.hookenv, 'config')
+        reply = {
+            'database': 'db1',
+            'database-user': 'dbuser1',
+        }
+        self.config.side_effect = lambda x: reply[x]
+        self.patch(handlers.hookenv, 'unit_private_ip', 'private_ip')
+        handlers.setup_database(database)
+        database.configure.assert_called_once_with(
+            'db1', 'dbuser1', 'private_ip')
 
     def test_setup_endpoint(self):
         self.patch(handlers.barbican, 'setup_endpoint')

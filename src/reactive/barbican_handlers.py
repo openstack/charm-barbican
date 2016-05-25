@@ -2,8 +2,10 @@
 from __future__ import absolute_import
 
 import charms.reactive as reactive
+import charmhelpers.core.hookenv as hookenv
 
-# This charm's library contains all of the handler code
+# This charm's library contains all of the handler code associated with
+# barbican
 import charm.openstack.barbican as barbican
 
 
@@ -17,12 +19,21 @@ def install_packages():
 
 @reactive.when('amqp.connected')
 def setup_amqp_req(amqp):
-    barbican.setup_amqp_req(amqp)
+    """Use the amqp interface to request access to the amqp broker using our
+    local configuration.
+    """
+    amqp.request_access(username=hookenv.config('rabbit-user'),
+                        vhost=hookenv.config('rabbit-vhost'))
 
 
 @reactive.when('shared-db.connected')
 def setup_database(database):
-    barbican.setup_database(database)
+    """On receiving database credentials, configure the database on the
+    interface.
+    """
+    database.configure(hookenv.config('database'),
+                       hookenv.config('database-user'),
+                       hookenv.unit_private_ip())
 
 
 @reactive.when('identity-service.connected')
