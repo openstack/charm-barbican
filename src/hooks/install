@@ -8,6 +8,7 @@ check_and_install() {
         apt-get -y install ${pkg}
     fi
 }
+status-set maintenance "Install hook running"
 
 if [[ $(lsb_release -sc) -eq "trusty" ]]; then
     juju-log "Enabling cloud archive to work around old trusty tools"

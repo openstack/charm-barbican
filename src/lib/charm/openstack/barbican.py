@@ -48,6 +48,13 @@ def render_configs(interfaces_list):
     BarbicanCharm.singleton.render_with_interfaces(interfaces_list)
 
 
+def assess_status():
+    """Just call the BarbicanCharm.singleton.assess_status() command to update
+    status on the unit.
+    """
+    BarbicanCharm.singleton.assess_status()
+
+
 ###
 # Implementation of the Barbican Charm classes
 
@@ -108,6 +115,8 @@ class BarbicanCharm(charms_openstack.charm.OpenStackCharm):
     default_service = 'barbican-api'
     services = ['barbican-api', 'barbican-worker']
 
+    required_relations = ['shared-db', 'amqp', 'identity-service']
+
     restart_map = {
         "{}/{}".format(BARBICAN_DIR, BARBICAN_API_CONF): services,
         "{}/{}".format(BARBICAN_DIR, BARBICAN_ADMIN_PASTE_CONF): services,
@@ -121,6 +130,9 @@ class BarbicanCharm(charms_openstack.charm.OpenStackCharm):
 
         If no release is passed, then the charm determines the release from the
         ch_utils.os_release() function.
+
+        Note that the release_selector can be used to control which class is
+        instantiated.
         """
         if release is None:
             # release = ch_utils.os_release('barbican-common')
@@ -135,3 +147,12 @@ class BarbicanCharm(charms_openstack.charm.OpenStackCharm):
         self.configure_source()
         # and do the actual install
         super(BarbicanCharm, self).install()
+
+
+# Determine the charm class by the supported release
+@charms_openstack.charm.register_os_release_selector
+def select_release():
+    """Determine the release based on the python-keystonemiddleware that is
+    installed.
+    """
+    return ch_utils.os_release('python-keystonemiddleware')

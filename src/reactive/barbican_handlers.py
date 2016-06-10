@@ -24,6 +24,7 @@ def setup_amqp_req(amqp):
     """
     amqp.request_access(username=hookenv.config('rabbit-user'),
                         vhost=hookenv.config('rabbit-vhost'))
+    barbican.assess_status()
 
 
 @reactive.when('shared-db.connected')
@@ -34,11 +35,13 @@ def setup_database(database):
     database.configure(hookenv.config('database'),
                        hookenv.config('database-user'),
                        hookenv.unit_private_ip())
+    barbican.assess_status()
 
 
 @reactive.when('identity-service.connected')
 def setup_endpoint(keystone):
     barbican.setup_endpoint(keystone)
+    barbican.assess_status()
 
 
 @reactive.when('shared-db.available')
@@ -46,3 +49,11 @@ def setup_endpoint(keystone):
 @reactive.when('amqp.available')
 def render_stuff(*args):
     barbican.render_configs(args)
+    barbican.assess_status()
+
+
+@reactive.when('config.changed')
+def config_changed():
+    """When the configuration changes, assess the unit's status to update any
+    juju state required"""
+    barbican.assess_status()
