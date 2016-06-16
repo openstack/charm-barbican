@@ -1,3 +1,0 @@
-host: {{nats['host']}}
-port: {{nats['port']}}
-domain: {{router['domain']}}
