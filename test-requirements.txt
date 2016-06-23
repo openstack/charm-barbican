@@ -3,4 +3,4 @@ os-testr>=0.4.1
 charms.reactive
 mock>=1.2
 coverage>=3.6
-git+https://github.com/ajkavanagh/charm.openstack#egg=charms-openstack
+git+https://github.com/ajkavanagh/charms.openstack.git#egg=charms-openstack

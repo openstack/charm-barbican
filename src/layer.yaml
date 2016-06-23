@@ -1,1 +1,7 @@
-includes: ['layer:openstack', 'interface:mysql-shared', 'interface:rabbitmq', 'interface:keystone']
+includes:
+  - layer:openstack
+  - interface:mysql-shared
+  - interface:rabbitmq
+  - interface:keystone
+  - interface:barbican-hsm-plugin
+repo: git@github.com:openstack-charmers/charm-barbican.git

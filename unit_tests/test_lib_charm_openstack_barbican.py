@@ -1,3 +1,17 @@
+# Copyright 2016 Canonical Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#  http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 from __future__ import absolute_import
 from __future__ import print_function
 
@@ -13,6 +27,11 @@ class Helper(unittest.TestCase):
     def setUp(self):
         self._patches = {}
         self._patches_start = {}
+        # patch out the select_release to always return 'mitaka'
+        self.patch(barbican.unitdata, 'kv')
+        _getter = mock.MagicMock()
+        _getter.get.return_value = barbican.BarbicanCharm.release
+        self.kv.return_value = _getter
 
     def tearDown(self):
         for k, v in self._patches.items():
@@ -76,23 +95,23 @@ class TestBarbicanConfigurationAdapter(Helper):
         # Make one with no errors, api version 2
         a = barbican.BarbicanConfigurationAdapter()
         self.assertEqual(a.barbican_api_keystone_pipeline,
-                         'keystone_authtoken context apiapp')
+                         'cors keystone_authtoken context apiapp')
         self.assertEqual(a.barbican_api_pipeline,
-                         'keystone_authtoken context apiapp')
+                         'cors keystone_authtoken context apiapp')
         # Now test it with api version 3
         reply['keystone-api-version'] = '3'
         a = barbican.BarbicanConfigurationAdapter()
         self.assertEqual(a.barbican_api_keystone_pipeline,
-                         'keystone_v3_authtoken context apiapp')
+                         'cors keystone_v3_authtoken context apiapp')
         self.assertEqual(a.barbican_api_pipeline,
-                         'keystone_v3_authtoken context apiapp')
+                         'cors keystone_v3_authtoken context apiapp')
         # and a 'none' version
         reply['keystone-api-version'] = 'none'
         a = barbican.BarbicanConfigurationAdapter()
         self.assertEqual(a.barbican_api_keystone_pipeline,
-                         'keystone_v3_authtoken context apiapp')
+                         'cors keystone_v3_authtoken context apiapp')
         self.assertEqual(a.barbican_api_pipeline,
-                         'unauthenticated-context apiapp')
+                         'cors unauthenticated-context apiapp')
         # finally, try to create an invalid one.
         reply['keystone-api-version'] = None
         with self.assertRaises(ValueError):
@@ -129,19 +148,5 @@ class TestBarbicanAdapters(Helper):
 
 class TestBarbicanCharm(Helper):
 
-    def test__init__(self):
-        self.patch(barbican.ch_utils, 'os_release')
-        barbican.BarbicanCharm()
-        self.os_release.assert_called_once_with('python-keystonemiddleware')
-
-    def test_install(self):
-        self.patch(barbican.charmhelpers.fetch, 'add_source')
-        b = barbican.BarbicanCharm()
-        self.patch(barbican.charms_openstack.charm.OpenStackCharm,
-                   'configure_source')
-        self.patch(barbican.charms_openstack.charm.OpenStackCharm,
-                   'install')
-        b.install()
-        self.add_source.assert_called_once_with('ppa:gnuoy/barbican-alt')
-        self.configure_source.assert_called_once_with()
-        self.install.assert_called_once_with()
+    # tests to be added
+    pass

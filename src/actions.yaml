@@ -1,0 +1,8 @@
+generate-mkek:
+  description: |
+    Generate an MKEK in the associated HSM (via the barbican-hsm-plugin
+    interface).
+generate-hmac:
+  description: |
+    Generate an HMAC in the associated HSM (via the barbican-hsm-plugin
+    interface).

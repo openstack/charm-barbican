@@ -12,4 +12,4 @@ lint:
 
 test:
 	@echo Starting unit tests...
-	@tox -e py27,py34,py35
+	@tox -e py34,py35

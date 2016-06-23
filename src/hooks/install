@@ -10,19 +10,8 @@ check_and_install() {
 }
 status-set maintenance "Install hook running"
 
-if [[ $(lsb_release -sc) -eq "trusty" ]]; then
-    juju-log "Enabling cloud archive to work around old trusty tools"
-    # Add a random cloud archive for the Openstack python3 clients
-    add-apt-repository --yes ppa:ubuntu-cloud-archive/mitaka-staging
-    apt-get update
-    check_and_install 'python3-pip'
-    # The trusty version of tox is too low (tox version is 1.6, required is at least 2.3.1)
-    # pip install tox to get around this and die a little inside
-    pip3 install tox
-else
-    juju-log "Installing tox"
-    check_and_install 'tox'
-fi
+juju-log "Installing tox"
+check_and_install 'tox'
 
 declare -a DEPS=('libssl-dev' 'libffi-dev' 'apt' 'python3-netaddr' 'python3-netifaces' 'python3-pip' 'python3-yaml' 'python-cinderclient' 'python-glanceclient' 'python-heatclient' 'python-keystoneclient' 'python-neutronclient' 'python-novaclient' 'python-swiftclient' 'python-ceilometerclient' 'openvswitch-test' 'python3-cinderclient' 'python3-glanceclient' 'python3-heatclient' 'python3-keystoneclient' 'python3-neutronclient' 'python3-novaclient' 'python3-swiftclient' 'python3-ceilometerclient')
 
