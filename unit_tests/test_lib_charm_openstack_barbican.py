@@ -124,8 +124,17 @@ class TestBarbicanAdapters(Helper):
     def test_barbican_adapters(self, config):
         reply = {
             'keystone-api-version': '2',
+            # for the charms.openstack code, which breaks if we don't have:
+            'os-public-hostname': 'host',
+            'os-internal-hostname': 'internal',
+            'os-admin-hostname': 'admin',
         }
-        config.side_effect = lambda: reply
+        def cf(key=None):
+            if key is not None:
+                return reply[key]
+            return reply
+
+        config.side_effect = cf
         amqp_relation = mock.MagicMock()
         amqp_relation.relation_name = 'amqp'
         shared_db_relation = mock.MagicMock()
@@ -148,5 +157,92 @@ class TestBarbicanAdapters(Helper):
 
 class TestBarbicanCharm(Helper):
 
-    # tests to be added
-    pass
+    def test_action_generate_mkek(self):
+        hsm = mock.MagicMock()
+        hsm.plugin_data = {
+            'library_path': 'path1',
+            'login': '1234',
+            'slot_id': 'slot1'
+        }
+        self.patch(barbican.hookenv, 'config')
+        config = {
+            'mkek-key-length': 5,
+            'label-mkek': 'the-label'
+        }
+        def cf(key=None):
+            if key is not None:
+                return config[key]
+            return config
+
+        self.config.side_effect = cf
+        self.patch(barbican.subprocess, 'check_call')
+        self.patch(barbican.hookenv, 'log')
+        # try generating a an mkek with no failure
+        c = barbican.BarbicanCharm()
+        c.action_generate_mkek(hsm)
+        cmd = [
+            'barbican-manage', 'hsm', 'gen_mkek',
+            '--library-path', 'path1',
+            '--passphrase', '1234',
+            '--slot-id', 'slot1',
+            '--length', '5',
+            '--label', 'the-label',
+        ]
+        self.check_call.assert_called_once_with(cmd)
+        self.log.assert_called_once_with(
+            "barbican-mangage hsm gen_mkek succeeded")
+        # and check that a problem is logged if it goes wrong
+        def side_effect():
+            raise barbican.subprocess.CalledProcessError
+
+        self.check_call.side_effect = side_effect
+        self.log.reset_mock()
+        with self.assertRaises(Exception):
+            c.action_generate_mkek(hsm)
+            self.log.assert_called_once_with(
+                "barbican-manage hsm gen_mkek failed.")
+
+    def test_action_generate_hmac(self):
+        hsm = mock.MagicMock()
+        hsm.plugin_data = {
+            'library_path': 'path1',
+            'login': '1234',
+            'slot_id': 'slot1'
+        }
+        self.patch(barbican.hookenv, 'config')
+        config = {
+            'hmac-key-length': 5,
+            'label-hmac': 'the-label'
+        }
+        def cf(key=None):
+            if key is not None:
+                return config[key]
+            return config
+
+        self.config.side_effect = cf
+        self.patch(barbican.subprocess, 'check_call')
+        self.patch(barbican.hookenv, 'log')
+        # try generating a an hmac with no failure
+        c = barbican.BarbicanCharm()
+        c.action_generate_hmac(hsm)
+        cmd = [
+            'barbican-manage', 'hsm', 'gen_hmac',
+            '--library-path', 'path1',
+            '--passphrase', '1234',
+            '--slot-id', 'slot1',
+            '--length', '5',
+            '--label', 'the-label',
+        ]
+        self.check_call.assert_called_once_with(cmd)
+        self.log.assert_called_once_with(
+            "barbican-mangage hsm gen_hmac succeeded")
+        # and check that a problem is logged if it goes wrong
+        def side_effect():
+            raise barbican.subprocess.CalledProcessError
+
+        self.check_call.side_effect = side_effect
+        self.log.reset_mock()
+        with self.assertRaises(Exception):
+            c.action_generate_hmac(hsm)
+            self.log.assert_called_once_with(
+                "barbican-manage hsm gen_hmac failed.")
