@@ -1,5 +1,7 @@
 # Barbican Source Charm
 
+THIS CHARM IS FOR EXPERIMENTAL USE AT PRESENT.
+
 This repository is for the reactive, layered,
 [Barbican](https://wiki.openstack.org/wiki/Barbican) _source_ charm. From the
 [wiki](https://wiki.openstack.org/wiki/Barbican) 'Barbican is a REST API
@@ -11,7 +13,7 @@ for all environments, including large ephemeral Clouds.'
 
 The Barbican charm currently supports the following plugins:
 
- - [charm-barbican-softhsm-plugin](https://github.com/openstack/charm-barbican-softhsm-plugin)
+ - charm-barbican-softhsm
 
 # Creating the primary MKEK and primary HMAC
 
@@ -55,10 +57,10 @@ HSM may reject setting up the keys more than once.
 # Developer Notes
 
 The Barbican charm has to be able to set `[crypto]` and `[xxx_plugin]` sections
-in the `barbican-api.conf` file. This data comes via the `barbican-hsm-plugin`
+in the `barbican-api.conf` file. This data comes via the `barbican-hsm`
 interface from a charm (probably a subordinate) that provides the interface.
 
-On the `barbican-hsm-interface` the data is provided in the `plugin_data()`
+On the `barbican-hsm` interface the data is provided in the `plugin_data()`
 method of the interface (or if it is adapted) in the `plugin_data` property.
 
 The theory of operation for the crypto plugin is that a local library that

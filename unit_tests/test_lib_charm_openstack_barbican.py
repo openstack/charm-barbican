@@ -129,6 +129,7 @@ class TestBarbicanAdapters(Helper):
             'os-internal-hostname': 'internal',
             'os-admin-hostname': 'admin',
         }
+
         def cf(key=None):
             if key is not None:
                 return reply[key]
@@ -169,6 +170,7 @@ class TestBarbicanCharm(Helper):
             'mkek-key-length': 5,
             'label-mkek': 'the-label'
         }
+
         def cf(key=None):
             if key is not None:
                 return config[key]
@@ -192,6 +194,7 @@ class TestBarbicanCharm(Helper):
         self.log.assert_called_once_with(
             "barbican-mangage hsm gen_mkek succeeded")
         # and check that a problem is logged if it goes wrong
+
         def side_effect():
             raise barbican.subprocess.CalledProcessError
 
@@ -214,6 +217,7 @@ class TestBarbicanCharm(Helper):
             'hmac-key-length': 5,
             'label-hmac': 'the-label'
         }
+
         def cf(key=None):
             if key is not None:
                 return config[key]
@@ -237,6 +241,7 @@ class TestBarbicanCharm(Helper):
         self.log.assert_called_once_with(
             "barbican-mangage hsm gen_hmac succeeded")
         # and check that a problem is logged if it goes wrong
+
         def side_effect():
             raise barbican.subprocess.CalledProcessError
 

@@ -3,7 +3,7 @@ includes:
   - interface:mysql-shared
   - interface:rabbitmq
   - interface:keystone
-  - interface:barbican-hsm-plugin
+  - interface:barbican-hsm
 options:
   basic:
     use_venv: True

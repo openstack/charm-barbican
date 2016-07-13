@@ -19,5 +19,5 @@ requires:
   identity-service:
     interface: keystone
   hsm:
-    interface: barbican-hsm-plugin
+    interface: barbican-hsm
     optional: true
