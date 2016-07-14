@@ -9,16 +9,25 @@ designed for the secure storage, provisioning and management of secrets such as
 passwords, encryption keys and X.509 Certificates. It is aimed at being useful
 for all environments, including large ephemeral Clouds.'
 
+Barbican can be used without an HSM for test purposes.
+
 # Plugins
 
 The Barbican charm currently supports the following plugins:
 
  - charm-barbican-softhsm
 
+However, due to an odd quirk of interelating software issues, barbican +
+SoftHSM2 + OpenSSL < 1.0.2h is not functionaly due to a missing feature in
+OpenSSL (EVP_aes_128_wrap_pad specifically).
+
+Thus the plugin interface is _currently_ provided to show how to interface an
+HSM to the barbican charm.
+
 # Creating the primary MKEK and primary HMAC
 
 Barbican (can use|uses) a Master Key Encryption Key (MKEK) scheme to wrap other
-keys so that in the course of issuing new encryption keys, it doesn't exhaust
+keys so that in the course of issuing new encryption keys, it does not exhaust
 the storage capacity of an HSM.
 
 See [KMIP MKEK Model

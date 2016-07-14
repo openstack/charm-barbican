@@ -7,6 +7,7 @@ bzr+lp:charm-helpers#egg=charmhelpers
 amulet>=1.14.3,<2.0
 bundletester>=0.6.1,<1.0
 python-keystoneclient>=1.7.1,<2.0
+python-barbicanclient>=4.0.1,<5.0
 python-designateclient>=1.5,<2.0
 python-cinderclient>=1.4.0,<2.0
 python-glanceclient>=1.1.0,<2.0

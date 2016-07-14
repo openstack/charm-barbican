@@ -43,11 +43,11 @@ options:
     type: string
     description: OpenStack Region
   keystone-api-version:
-    default: "3"
+    default: "2"
     type: string
     description: none,  2 or 3
   require-hsm-plugin:
-    default: True
+    default: False
     type: boolean
     description: |
       If True (the default) then the barbcian-worker process won't be fully

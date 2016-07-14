@@ -12,9 +12,6 @@ series:
 # - trusty
  - xenial
 subordinate: false
-provides:
-  secret-store:
-    interface: barbican
 requires:
   shared-db:
     interface: mysql-shared
