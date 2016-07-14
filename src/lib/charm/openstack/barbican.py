@@ -162,7 +162,7 @@ class HSMAdapter(charms_openstack.adapters.OpenStackRelationAdapter):
             return ''
 
 
-class BarbicanAdapters(charms_openstack.adapters.OpenStackRelationAdapters):
+class BarbicanAdapters(charms_openstack.adapters.OpenStackAPIRelationAdapters):
     """
     Adapters class for the Barbican charm.
 
@@ -215,6 +215,8 @@ class BarbicanCharm(charms_openstack.charm.OpenStackCharm):
         # DEBUG - until seed random change lands into xenial cloud archive
         # BUG #1599550 - barbican + softhsm2 + libssl1.0.0:
         #  pkcs11:_generate_random() fails
+        # WARNING: This charm can't be released into stable until the bug is
+        # fixed.
         charmhelpers.fetch.add_source("ppa:ajkavanagh/barbican")
         self.configure_source()
         # and do the actual install
