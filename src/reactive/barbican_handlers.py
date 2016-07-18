@@ -81,3 +81,9 @@ def config_changed():
     """When the configuration changes, assess the unit's status to update any
     juju state required"""
     barbican.assess_status()
+
+
+@reactive.when('identity-service.available')
+def configure_ssl(keystone):
+    '''Configure SSL access to Barbican if requested'''
+    barbican.configure_ssl(keystone)

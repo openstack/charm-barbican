@@ -52,11 +52,13 @@ class Helper(unittest.TestCase):
 class TestOpenStackBarbican(Helper):
 
     def test_install(self):
+        self.patch(barbican.BarbicanCharm, 'set_config_defined_certs_and_keys')
         self.patch(barbican.BarbicanCharm.singleton, 'install')
         barbican.install()
         self.install.assert_called_once_with()
 
     def test_setup_endpoint(self):
+        self.patch(barbican.BarbicanCharm, 'set_config_defined_certs_and_keys')
         self.patch(barbican.BarbicanCharm, 'service_type',
                    new_callable=mock.PropertyMock)
         self.patch(barbican.BarbicanCharm, 'region',
@@ -78,6 +80,7 @@ class TestOpenStackBarbican(Helper):
             'type1', 'region1', 'public_url', 'internal_url', 'admin_url')
 
     def test_render_configs(self):
+        self.patch(barbican.BarbicanCharm, 'set_config_defined_certs_and_keys')
         self.patch(barbican.BarbicanCharm.singleton, 'render_with_interfaces')
         barbican.render_configs('interfaces-list')
         self.render_with_interfaces.assert_called_once_with(
@@ -88,6 +91,9 @@ class TestBarbicanConfigurationAdapter(Helper):
 
     @mock.patch('charmhelpers.core.hookenv.config')
     def test_barbican_configuration_adapter(self, config):
+        self.patch(
+            barbican.charms_openstack.adapters.APIConfigurationAdapter,
+            'get_network_addresses')
         reply = {
             'keystone-api-version': '2',
         }
