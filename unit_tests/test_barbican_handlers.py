@@ -108,6 +108,7 @@ class TestBarbicanHandlers(unittest.TestCase):
                              'identity-service.available',
                              'amqp.available',),
             'config_changed': ('config.changed', ),
+            'configure_ssl': ('identity-service.available', ),
         }
         when_not_patterns = {
             'install_packages': ('charm.installed', ),

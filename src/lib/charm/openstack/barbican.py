@@ -33,6 +33,7 @@ PACKAGES = ['barbican-common', 'barbican-api', 'barbican-worker',
 BARBICAN_DIR = '/etc/barbican/'
 BARBICAN_CONF = BARBICAN_DIR + "barbican.conf"
 BARBICAN_API_PASTE_CONF = BARBICAN_DIR + "barbican-api-paste.ini"
+BARBICAN_WSGI_CONF = '/etc/apache2/conf-available/barbican-api.conf'
 
 OPENSTACK_RELEASE_KEY = 'barbican-charm.openstack-release-version'
 
@@ -92,14 +93,24 @@ def assess_status():
     BarbicanCharm.singleton.assess_status()
 
 
+def configure_ssl(keystone=None):
+    """Use the singleton from the BarbicanCharm to configure ssl
+
+    :param keystone: KeystoneRequires() interface class
+    """
+    BarbicanCharm.singleton.configure_ssl(keystone)
+
+
 ###
 # Implementation of the Barbican Charm classes
 
 class BarbicanConfigurationAdapter(
-        charms_openstack.adapters.ConfigurationAdapter):
+        charms_openstack.adapters.APIConfigurationAdapter):
 
-    def __init__(self):
-        super(BarbicanConfigurationAdapter, self).__init__()
+    def __init__(self, port_map=None):
+        super(BarbicanConfigurationAdapter, self).__init__(
+            service_name='barbican',
+            port_map=port_map)
         if self.keystone_api_version not in ['2', '3', 'none']:
             raise ValueError(
                 "Unsupported keystone-api-version ({}). It should be 2 or 3"
@@ -176,10 +187,12 @@ class BarbicanAdapters(charms_openstack.adapters.OpenStackAPIRelationAdapters):
 
     def __init__(self, relations):
         super(BarbicanAdapters, self).__init__(
-            relations, options_instance=BarbicanConfigurationAdapter())
+            relations,
+            options_instance=BarbicanConfigurationAdapter(
+                port_map=BarbicanCharm.api_ports))
 
 
-class BarbicanCharm(charms_openstack.charm.OpenStackCharm):
+class BarbicanCharm(charms_openstack.charm.HAOpenStackCharm):
     """BarbicanCharm provides the specialisation of the OpenStackCharm
     functionality to manage a barbican unit.
     """
@@ -204,9 +217,11 @@ class BarbicanCharm(charms_openstack.charm.OpenStackCharm):
     restart_map = {
         BARBICAN_CONF: services,
         BARBICAN_API_PASTE_CONF: services,
+        BARBICAN_WSGI_CONF: services,
     }
 
     adapters_class = BarbicanAdapters
+    ha_resources = ['vips', 'haproxy']
 
     def install(self):
         """Customise the installation, configure the source and then call the

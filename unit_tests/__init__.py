@@ -21,6 +21,8 @@ sys.path.append('src/lib')
 # Mock out charmhelpers so that we can test without it.
 # also stops sideeffects from occuring.
 charmhelpers = mock.MagicMock()
+apt_pkg = mock.MagicMock()
+sys.modules['apt_pkg'] = apt_pkg
 sys.modules['charmhelpers'] = charmhelpers
 sys.modules['charmhelpers.core'] = charmhelpers.core
 sys.modules['charmhelpers.core.hookenv'] = charmhelpers.core.hookenv
