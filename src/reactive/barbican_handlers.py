@@ -85,5 +85,5 @@ def config_changed():
 
 @reactive.when('identity-service.available')
 def configure_ssl(keystone):
-    '''Configure SSL access to Barbican if requested'''
+    """Configure SSL access to Barbican if requested"""
     barbican.configure_ssl(keystone)
