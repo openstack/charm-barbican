@@ -6,10 +6,3 @@ clean:
 
 build: clean
 	LAYER_PATH=$(LAYER_PATH) tox -e build
-
-lint:
-	@tox -e pep8
-
-test:
-	@echo Starting unit tests...
-	@tox -e py34,py35

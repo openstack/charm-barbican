@@ -7,6 +7,10 @@ description: |
  being useful for all environments, including large ephemeral Clouds
 tags:
   - openstack
+series:
+# Trusty disabled pending https://bugs.launchpad.net/bugs/1609498
+# - trusty
+ - xenial
 subordinate: false
 provides:
   secret-store:

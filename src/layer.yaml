@@ -4,8 +4,4 @@ includes:
   - interface:rabbitmq
   - interface:keystone
   - interface:barbican-hsm
-options:
-  basic:
-    use_venv: True
-    include_system_packages: True
-repo: git@github.com:openstack-charmers/charm-barbican.git
+repo: https://github.com/openstack/charm-barbican
