@@ -1,2 +1,3 @@
-charm-tools
+#charm-tools
+git+https://github.com/juju/charm-tools#egg=charm-tools
 simplejson
