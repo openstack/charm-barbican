@@ -10,7 +10,8 @@ tags:
 series:
 # Trusty disabled pending https://bugs.launchpad.net/bugs/1609498
 # - trusty
- - xenial
+  - xenial
+  - yakkety
 subordinate: false
 requires:
   shared-db:
