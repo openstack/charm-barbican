@@ -19,10 +19,7 @@ from __future__ import absolute_import
 
 import subprocess
 
-import charmhelpers.contrib.openstack.utils as ch_utils
 import charmhelpers.core.hookenv as hookenv
-import charmhelpers.core.unitdata as unitdata
-import charmhelpers.fetch
 
 import charms_openstack.charm
 import charms_openstack.adapters
@@ -38,158 +35,80 @@ BARBICAN_WSGI_CONF = '/etc/apache2/conf-available/barbican-api.conf'
 OPENSTACK_RELEASE_KEY = 'barbican-charm.openstack-release-version'
 
 
-###
-# Handler functions for events that are interesting to the Barbican charms
-
-def install():
-    """Use the singleton from the BarbicanCharm to install the packages on the
-    unit
-    """
-    unitdata.kv().unset(OPENSTACK_RELEASE_KEY)
-    BarbicanCharm.singleton.install()
-
-
-def setup_endpoint(keystone):
-    """When the keystone interface connects, register this unit in the keystone
-    catalogue.
-
-    :param keystone: instance of KeystoneRequires() class from i/f
-    """
-    charm = BarbicanCharm.singleton
-    keystone.register_endpoints(charm.service_type,
-                                charm.region,
-                                charm.public_url,
-                                charm.internal_url,
-                                charm.admin_url)
-
-
-def render_configs(interfaces_list):
-    """Using a list of interfaces, render the configs and, if they have
-    changes, restart the services on the unit.
-
-    :param interfaces_list: [RelationBase] interfaces from reactive
-    """
-    BarbicanCharm.singleton.render_with_interfaces(interfaces_list)
-
-
-def generate_mkek(hsm):
-    """Ask barbican to generate an MKEK in the backend store using the HSM.
-    This assumes that an HSM is available, and configured.  Uses the charm.
-    """
-    BarbicanCharm.singleton.action_generate_mkek(hsm)
-
-
-def generate_hmac(hsm):
-    """Ask barbican to generate an HMAC in the backend store using the HSM.
-    This assumes that an HSM is available, and configured.  Uses the charm.
-    """
-    BarbicanCharm.singleton.action_generate_hmac(hsm)
-
-
-def assess_status():
-    """Just call the BarbicanCharm.singleton.assess_status() command to update
-    status on the unit.
-    """
-    BarbicanCharm.singleton.assess_status()
-
-
-def configure_ssl(keystone=None):
-    """Use the singleton from the BarbicanCharm to configure ssl
-
-    :param keystone: KeystoneRequires() interface class
-    """
-    BarbicanCharm.singleton.configure_ssl(keystone)
+# select the default release function
+charms_openstack.charm.use_defaults('charm.default-select-release')
 
 
 ###
 # Implementation of the Barbican Charm classes
 
-class BarbicanConfigurationAdapter(
-        charms_openstack.adapters.APIConfigurationAdapter):
+# Add some properties to the configuration for templates/code to use with the
+# charm instance.  The config_validator is called when the configuration is
+# loaded, and the properties are to add those names to the config object.
 
-    def __init__(self, port_map=None):
-        super(BarbicanConfigurationAdapter, self).__init__(
-            service_name='barbican',
-            port_map=port_map)
-        if self.keystone_api_version not in ['2', '3', 'none']:
-            raise ValueError(
-                "Unsupported keystone-api-version ({}). It should be 2 or 3"
-                .format(self.keystone_api_version))
-
-    @property
-    def barbican_api_keystone_pipeline(self):
-        if self.keystone_api_version == "2":
-            return 'cors keystone_authtoken context apiapp'
-        else:
-            return 'cors keystone_v3_authtoken context apiapp'
-
-    @property
-    def barbican_api_pipeline(self):
-        return {
-            "2": "cors keystone_authtoken context apiapp",
-            "3": "cors keystone_v3_authtoken context apiapp",
-            "none": "cors unauthenticated-context apiapp"
-        }[self.keystone_api_version]
-
-    @property
-    def barbican_api_keystone_audit_pipeline(self):
-        if self.keystone_api_version == "2":
-            return 'keystone_authtoken context audit apiapp'
-        else:
-            return 'keystone_v3_authtoken context audit apiapp'
+@charms_openstack.adapters.config_property
+def validate_keystone_api_version(config):
+    if config.keystone_api_version not in ['2', '3', 'none']:
+        raise ValueError(
+            "Unsupported keystone-api-version ({}). It should be 2 or 3"
+            .format(config.keystone_api_version))
 
 
-class HSMAdapter(charms_openstack.adapters.OpenStackRelationAdapter):
-    """Adapt the barbican-hsm-plugin relation for use in rendering the config
-    for Barbican.  Note that the HSM relation is optional, so we have a class
-    variable 'exists' that we can test in the template to see if we should
-    render HSM parameters into the template.
-    """
-
-    interface_type = 'hsm'
-
-    @property
-    def library_path(self):
-        """Provide a library_path property to the template if it exists"""
-        try:
-            return self.relation.plugin_data['library_path']
-        except:
-            return ''
-
-    @property
-    def login(self):
-        """Provide a login property to the template if it exists"""
-        try:
-            return self.relation.plugin_data['login']
-        except:
-            return ''
-
-    @property
-    def slot_id(self):
-        """Provide a slot_id property to the template if it exists"""
-        try:
-            return self.relation.plugin_data['slot_id']
-        except:
-            return ''
+@charms_openstack.adapters.config_property
+def barbican_api_keystone_pipeline(config):
+    if config.keystone_api_version == "2":
+        return 'cors keystone_authtoken context apiapp'
+    else:
+        return 'cors keystone_v3_authtoken context apiapp'
 
 
-class BarbicanAdapters(charms_openstack.adapters.OpenStackAPIRelationAdapters):
-    """
-    Adapters class for the Barbican charm.
+@charms_openstack.adapters.config_property
+def barbican_api_pipeline(config):
+    return {
+        "2": "cors keystone_authtoken context apiapp",
+        "3": "cors keystone_v3_authtoken context apiapp",
+        "none": "cors unauthenticated-context apiapp"
+    }[config.keystone_api_version]
 
-    This plumbs in the BarbicanConfigurationAdapter as the ConfigurationAdapter
-    to provide additional properties.
-    """
 
-    relation_adapters = {
-        'hsm': HSMAdapter,
-    }
+@charms_openstack.adapters.config_property
+def barbican_api_keystone_audit_pipeline(config):
+    if config.keystone_api_version == "2":
+        return 'keystone_authtoken context audit apiapp'
+    else:
+        return 'keystone_v3_authtoken context audit apiapp'
 
-    def __init__(self, relations):
-        super(BarbicanAdapters, self).__init__(
-            relations,
-            options_instance=BarbicanConfigurationAdapter(
-                port_map=BarbicanCharm.api_ports))
+
+# Adapt the barbican-hsm-plugin relation for use in rendering the config
+# for Barbican.  Note that the HSM relation is optional, so we have a class
+# variable 'exists' that we can test in the template to see if we should
+# render HSM parameters into the template.
+
+@charms_openstack.adapters.adapter_property('hsm')
+def library_path(hsm):
+    """Provide a library_path property to the template if it exists"""
+    try:
+        return hsm.relation.plugin_data['library_path']
+    except:
+        return ''
+
+
+@charms_openstack.adapters.adapter_property('hsm')
+def login(hsm):
+    """Provide a login property to the template if it exists"""
+    try:
+        return hsm.relation.plugin_data['login']
+    except:
+        return ''
+
+
+@charms_openstack.adapters.adapter_property('hsm')
+def slot_id(hsm):
+    """Provide a slot_id property to the template if it exists"""
+    try:
+        return hsm.relation.plugin_data['slot_id']
+    except:
+        return ''
 
 
 class BarbicanCharm(charms_openstack.charm.HAOpenStackCharm):
@@ -220,22 +139,34 @@ class BarbicanCharm(charms_openstack.charm.HAOpenStackCharm):
         BARBICAN_WSGI_CONF: services,
     }
 
-    adapters_class = BarbicanAdapters
     ha_resources = ['vips', 'haproxy']
 
-    def install(self):
-        """Customise the installation, configure the source and then call the
-        parent install() method to install the packages
+    def get_amqp_credentials(self):
+        """Provide the default amqp username and vhost as a tuple.
+
+        :returns (username, host): two strings to send to the amqp provider.
         """
-        # DEBUG - until seed random change lands into xenial cloud archive
-        # BUG #1599550 - barbican + softhsm2 + libssl1.0.0:
-        #  pkcs11:_generate_random() fails
-        # WARNING: This charm can't be released into stable until the bug is
-        # fixed.
-        charmhelpers.fetch.add_source("ppa:ajkavanagh/barbican")
-        self.configure_source()
-        # and do the actual install
-        super(BarbicanCharm, self).install()
+        return (self.config['rabbit-user'], self.config['rabbit-vhost'])
+
+    def get_database_setup(self):
+        """Provide the default database credentials as a list of 3-tuples
+
+        returns a structure of:
+        [
+            {'database': <database>,
+             'username': <username>,
+             'hostname': <hostname of this unit>
+             'prefix': <the optional prefix for the database>, },
+        ]
+
+        :returns [{'database': ...}, ...]: credentials for multiple databases
+        """
+        return [
+            dict(
+                database=self.config['database'],
+                username=self.config['database-user'],
+                hostname=hookenv.unit_private_ip(), )
+        ]
 
     def action_generate_mkek(self, hsm):
         """Generate an MKEK on a connected HSM.  Requires that an HSM is
@@ -308,19 +239,3 @@ class BarbicanCharm(charms_openstack.charm.HAOpenStackCharm):
             required_relations.append('hsm')
         return super(BarbicanCharm, self).states_to_check(
             required_relations=required_relations)
-
-
-# Determine the charm class by the supported release
-@charms_openstack.charm.register_os_release_selector
-def select_release():
-    """Determine the release based on the python-keystonemiddleware that is
-    installed.
-
-    Note that this function caches the release after the first install so that
-    it doesn't need to keep going and getting it from the package information.
-    """
-    release_version = unitdata.kv().get(OPENSTACK_RELEASE_KEY, None)
-    if release_version is None:
-        release_version = ch_utils.os_release('python-keystonemiddleware')
-        unitdata.kv().set(OPENSTACK_RELEASE_KEY, release_version)
-    return release_version

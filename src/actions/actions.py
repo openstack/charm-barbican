@@ -24,10 +24,11 @@ basic.bootstrap_charm_deps()
 basic.init_config_states()
 
 import charms.reactive as reactive
-
 import charmhelpers.core.hookenv as hookenv
+import charms_openstack.charm
 
-import charm.openstack.barbican as barbican
+# import the barbican module to get the charm definitions created.
+import charm.openstack.barbican  # noqa
 
 
 def generate_mkek_action(*args):
@@ -41,7 +42,8 @@ def generate_mkek_action(*args):
             "Can't generate an MKEK in associated HSM because HSM is not "
             "available.")
         return
-    barbican.generate_mkek(hsm)
+    with charms_openstack.charm.provide_charm_instance as barbican_charm:
+        barbican_charm.generate_mkek(hsm)
 
 
 def generate_hmac_action(*args):
@@ -54,7 +56,8 @@ def generate_hmac_action(*args):
         hookenv.action_fail(
             "Can't generate an HMAC in associated HSM because HSM is not "
             "available.")
-    barbican.generate_hmac(hsm)
+    with charms_openstack.charm.provide_charm_instance as barbican_charm:
+        barbican_charm.generate_hmac(hsm)
 
 
 # Actions to function mapping, to allow for illegal python action names that

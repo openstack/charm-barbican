@@ -18,46 +18,28 @@ from __future__ import absolute_import
 import charms.reactive as reactive
 import charmhelpers.core.hookenv as hookenv
 
+import charms_openstack.charm as charm
+
 # This charm's library contains all of the handler code associated with
-# barbican
-import charm.openstack.barbican as barbican
+# barbican -- we need to import it to get the definitions for the charm.
+import charm.openstack.barbican as barbican  # noqa
 
 
-# use a synthetic state to ensure that it get it to be installed independent of
-# the install hook.
-@reactive.when_not('charm.installed')
-def install_packages():
-    barbican.install()
-    reactive.set_state('charm.installed')
+# Use the charms.openstack defaults for common states and hooks
+charm.use_defaults(
+    'charm.installed',
+    'amqp.connected',
+    'shared-db.connected',
+    'identity-service.connected',
+    'identity-service.available',  # enables SSL support
+    'config.changed',
+    'update-status')
 
 
-@reactive.when('amqp.connected')
-def setup_amqp_req(amqp):
-    """Use the amqp interface to request access to the amqp broker using our
-    local configuration.
-    """
-    amqp.request_access(username=hookenv.config('rabbit-user'),
-                        vhost=hookenv.config('rabbit-vhost'))
-    barbican.assess_status()
-
-
-@reactive.when('shared-db.connected')
-def setup_database(database):
-    """On receiving database credentials, configure the database on the
-    interface.
-    """
-    database.configure(hookenv.config('database'),
-                       hookenv.config('database-user'),
-                       hookenv.unit_private_ip())
-    barbican.assess_status()
-
-
-@reactive.when('identity-service.connected')
-def setup_endpoint(keystone):
-    barbican.setup_endpoint(keystone)
-    barbican.assess_status()
-
-
+# Note that because of the way reactive.when works, (which is to 'find' the
+# __code__ segment of the decorated function, it's very, very difficult to add
+# other kinds of decorators here.  This rules out adding other things into the
+# charm args list.  It is also CPython dependent.
 @reactive.when('shared-db.available')
 @reactive.when('identity-service.available')
 @reactive.when('amqp.available')
@@ -65,25 +47,11 @@ def render_stuff(*args):
     """Render the configuration for Barbican when all the interfaces are
     available.
 
-    Note that the HSM interface is optional (hence the @when_any) and thus is
-    only used if it is available.
+    Note that the HSM interface is optional and thus is only used if it is
+    available.
     """
-    # Get the optional hsm relation, if it is available for rendering.
-    hsm = reactive.RelationBase.from_state('hsm.available')
-    if hsm is not None:
-        args = args + (hsm, )
-    barbican.render_configs(args)
-    barbican.assess_status()
-
-
-@reactive.when('config.changed')
-def config_changed():
-    """When the configuration changes, assess the unit's status to update any
-    juju state required"""
-    barbican.assess_status()
-
-
-@reactive.when('identity-service.available')
-def configure_ssl(keystone):
-    """Configure SSL access to Barbican if requested"""
-    barbican.configure_ssl(keystone)
+    hookenv.log("about to call the render_configs with {}".format(args))
+    with charm.provide_charm_instance() as barbican_charm:
+        barbican_charm.render_with_interfaces(
+            charm.optional_interfaces(args, 'hsm.available'))
+        barbican_charm.assess_status()
