@@ -1,0 +1,12 @@
+#!/usr/bin/env python
+
+"""Amulet tests on a basic barbican deploy on xenial-ocata for keystone v3.
+"""
+
+from basic_deployment import BarbicanBasicDeployment
+
+if __name__ == '__main__':
+    deployment = BarbicanBasicDeployment(series='xenial', keystone_version=3,
+                                         openstack='cloud:xenial-ocata',
+                                         source='cloud:xenial-updates/ocata')
+    deployment.run_tests()

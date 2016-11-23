@@ -1,0 +1,10 @@
+#!/usr/bin/env python
+
+"""Amulet tests on a basic barbican deployment on zesty-ocata for keystone v2.
+"""
+
+from basic_deployment import BarbicanBasicDeployment
+
+if __name__ == '__main__':
+    deployment = BarbicanBasicDeployment(series='zesty', keystone_version=2)
+    deployment.run_tests()
