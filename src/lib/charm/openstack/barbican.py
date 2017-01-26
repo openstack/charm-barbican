@@ -164,8 +164,7 @@ class BarbicanCharm(charms_openstack.charm.HAOpenStackCharm):
         return [
             dict(
                 database=self.config['database'],
-                username=self.config['database-user'],
-                hostname=hookenv.unit_private_ip(), )
+                username=self.config['database-user'], )
         ]
 
     def action_generate_mkek(self, hsm):
