@@ -11,6 +11,7 @@ series:
 # Trusty disabled pending https://bugs.launchpad.net/bugs/1609498
 # - trusty
   - xenial
+  - zesty
   - yakkety
 subordinate: false
 requires:
