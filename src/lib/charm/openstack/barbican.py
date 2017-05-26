@@ -17,6 +17,7 @@
 # needed on the class.
 from __future__ import absolute_import
 
+import collections
 import subprocess
 
 import charmhelpers.core.hookenv as hookenv
@@ -140,6 +141,21 @@ class BarbicanCharm(charms_openstack.charm.HAOpenStackCharm):
     }
 
     ha_resources = ['vips', 'haproxy']
+
+    # Package for release version detection
+    release_pkg = 'barbican-common'
+
+    # Package codename map for barbican-common
+    package_codenames = {
+        'barbican-common': collections.OrderedDict([
+            ('2', 'mitaka'),
+            ('3', 'newton'),
+            ('4', 'ocata'),
+            ('5', 'pike'),
+            ('6', 'queens'),
+            ('7', 'rocky'),
+        ]),
+    }
 
     def get_amqp_credentials(self):
         """Provide the default amqp username and vhost as a tuple.
