@@ -106,10 +106,22 @@ class BarbicanBasicDeployment(OpenStackAmuletDeployment):
             self._get_openstack_release_string()))
 
         # Authenticate admin with keystone endpoint
-        self.keystone = u.authenticate_keystone_admin(self.keystone_sentry,
-                                                      user='admin',
-                                                      password='openstack',
-                                                      tenant='admin')
+        if self._keystone_version == '2':
+            self.keystone = u.authenticate_keystone_admin(
+                self.keystone_sentry,
+                user='admin',
+                password='openstack',
+                tenant='admin')
+        elif self._keystone_version == '3':
+            # use default admin values in u.authenticate_keystone_admins()
+            # for user_domain_name, etc.
+            self.keystone = u.authenticate_keystone_admin(
+                self.keystone_sentry,
+                user='admin',
+                password='openstack',
+                api_version=3)
+        else:
+            raise RuntimeError("keystone version must be '2' or '3'")
 
     def test_100_services(self):
         """Verify the expected services are running on the corresponding
