@@ -90,7 +90,7 @@ def library_path(hsm):
     """Provide a library_path property to the template if it exists"""
     try:
         return hsm.relation.plugin_data['library_path']
-    except:
+    except Exception:
         return ''
 
 
@@ -99,7 +99,7 @@ def login(hsm):
     """Provide a login property to the template if it exists"""
     try:
         return hsm.relation.plugin_data['login']
-    except:
+    except Exception:
         return ''
 
 
@@ -108,7 +108,7 @@ def slot_id(hsm):
     """Provide a slot_id property to the template if it exists"""
     try:
         return hsm.relation.plugin_data['slot_id']
-    except:
+    except Exception:
         return ''
 
 

@@ -5,3 +5,4 @@ interfaces
 trusty
 .testrepository
 __pycache__
+.stestr
