@@ -5,3 +5,7 @@ includes:
   - interface:keystone
   - interface:barbican-hsm
 repo: https://github.com/openstack/charm-barbican
+options:
+  basic:
+    use_venv: true
+    include_system_packages: true
