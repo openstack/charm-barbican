@@ -11,8 +11,8 @@ series:
 # Trusty disabled pending https://bugs.launchpad.net/bugs/1609498
 # - trusty
   - xenial
+  - bionic
   - artful
-  - zesty
 subordinate: false
 requires:
   shared-db:
