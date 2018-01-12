@@ -58,26 +58,26 @@ def validate_keystone_api_version(config):
 @charms_openstack.adapters.config_property
 def barbican_api_keystone_pipeline(config):
     if config.keystone_api_version == "2":
-        return 'cors keystone_authtoken context apiapp'
+        return 'cors http_proxy_to_wsgi keystone_authtoken context apiapp'
     else:
-        return 'cors keystone_v3_authtoken context apiapp'
+        return 'cors http_proxy_to_wsgi keystone_v3_authtoken context apiapp'
 
 
 @charms_openstack.adapters.config_property
 def barbican_api_pipeline(config):
     return {
-        "2": "cors keystone_authtoken context apiapp",
-        "3": "cors keystone_v3_authtoken context apiapp",
-        "none": "cors unauthenticated-context apiapp"
+        "2": "cors http_proxy_to_wsgi keystone_authtoken context apiapp",
+        "3": "cors http_proxy_to_wsgi keystone_v3_authtoken context apiapp",
+        "none": "cors http_proxy_to_wsgi unauthenticated-context apiapp"
     }[config.keystone_api_version]
 
 
 @charms_openstack.adapters.config_property
 def barbican_api_keystone_audit_pipeline(config):
     if config.keystone_api_version == "2":
-        return 'keystone_authtoken context audit apiapp'
+        return 'http_proxy_to_wsgi keystone_authtoken context audit apiapp'
     else:
-        return 'keystone_v3_authtoken context audit apiapp'
+        return 'http_proxy_to_wsgi keystone_v3_authtoken context audit apiapp'
 
 
 # Adapt the barbican-hsm-plugin relation for use in rendering the config

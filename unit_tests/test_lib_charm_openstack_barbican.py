@@ -43,32 +43,39 @@ class TestCustomProperties(Helper):
     def test_barbican_api_keystone_pipeline(self):
         config = mock.MagicMock()
         config.keystone_api_version = '2'
-        self.assertEqual(barbican.barbican_api_keystone_pipeline(config),
-                         'cors keystone_authtoken context apiapp')
+        self.assertEqual(
+            barbican.barbican_api_keystone_pipeline(config),
+            'cors http_proxy_to_wsgi keystone_authtoken context apiapp')
         config.keystone_api_version = ''
-        self.assertEqual(barbican.barbican_api_keystone_pipeline(config),
-                         'cors keystone_v3_authtoken context apiapp')
+        self.assertEqual(
+            barbican.barbican_api_keystone_pipeline(config),
+            'cors http_proxy_to_wsgi keystone_v3_authtoken context apiapp')
 
     def test_barbican_api_pipeline(self):
         config = mock.MagicMock()
         config.keystone_api_version = '2'
-        self.assertEqual(barbican.barbican_api_pipeline(config),
-                         'cors keystone_authtoken context apiapp')
+        self.assertEqual(
+            barbican.barbican_api_pipeline(config),
+            'cors http_proxy_to_wsgi keystone_authtoken context apiapp')
         config.keystone_api_version = '3'
-        self.assertEqual(barbican.barbican_api_pipeline(config),
-                         'cors keystone_v3_authtoken context apiapp')
+        self.assertEqual(
+            barbican.barbican_api_pipeline(config),
+            'cors http_proxy_to_wsgi keystone_v3_authtoken context apiapp')
         config.keystone_api_version = 'none'
-        self.assertEqual(barbican.barbican_api_pipeline(config),
-                         'cors unauthenticated-context apiapp')
+        self.assertEqual(
+            barbican.barbican_api_pipeline(config),
+            'cors http_proxy_to_wsgi unauthenticated-context apiapp')
 
     def test_barbican_api_keystone_audit_pipeline(self):
         config = mock.MagicMock()
         config.keystone_api_version = '2'
-        self.assertEqual(barbican.barbican_api_keystone_audit_pipeline(config),
-                         'keystone_authtoken context audit apiapp')
+        self.assertEqual(
+            barbican.barbican_api_keystone_audit_pipeline(config),
+            'http_proxy_to_wsgi keystone_authtoken context audit apiapp')
         config.keystone_api_version = ''
-        self.assertEqual(barbican.barbican_api_keystone_audit_pipeline(config),
-                         'keystone_v3_authtoken context audit apiapp')
+        self.assertEqual(
+            barbican.barbican_api_keystone_audit_pipeline(config),
+            'http_proxy_to_wsgi keystone_v3_authtoken context audit apiapp')
 
 
 class TestHSMProperties(Helper):
