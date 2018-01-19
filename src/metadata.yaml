@@ -12,7 +12,6 @@ series:
 # - trusty
   - xenial
   - artful
-  - zesty
 subordinate: false
 requires:
   shared-db:
