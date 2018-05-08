@@ -105,23 +105,11 @@ class BarbicanBasicDeployment(OpenStackAmuletDeployment):
         u.log.debug('openstack release str: {}'.format(
             self._get_openstack_release_string()))
 
-        # Authenticate admin with keystone endpoint
-        if self._keystone_version == '2':
-            self.keystone = u.authenticate_keystone_admin(
-                self.keystone_sentry,
-                user='admin',
-                password='openstack',
-                tenant='admin')
-        elif self._keystone_version == '3':
-            # use default admin values in u.authenticate_keystone_admins()
-            # for user_domain_name, etc.
-            self.keystone = u.authenticate_keystone_admin(
-                self.keystone_sentry,
-                user='admin',
-                password='openstack',
-                api_version=3)
-        else:
-            raise RuntimeError("keystone version must be '2' or '3'")
+        # Authenticate admin with keystone
+        self.keystone_session, self.keystone = u.get_default_keystone_session(
+            self.keystone_sentry,
+            openstack_release=self._get_openstack_release(),
+            api_version=int(self._keystone_version))
 
     def test_100_services(self):
         """Verify the expected services are running on the corresponding
@@ -376,6 +364,10 @@ class BarbicanBasicDeployment(OpenStackAmuletDeployment):
                 create=lambda: self.keystone.roles.add_user_role(
                     demo_user, admin_role, tenant=tenant))
 
+            self.keystone_demo = u.authenticate_keystone_user(
+                self.keystone, user='demo',
+                password='pass', tenant='demo')
+
         else:
             # find or create the 'default' domain
             domain = self._find_or_create(
@@ -424,10 +416,13 @@ class BarbicanBasicDeployment(OpenStackAmuletDeployment):
                     role=admin_role,
                     user=demo_user,
                     project=demo_project)
-
-        self.keystone_demo = u.authenticate_keystone_user(
-            self.keystone, user='demo',
-            password='pass', tenant='demo')
+            keystone_ip = self.keystone_sentry.info['public-address']
+            self.keystone_demo = u.authenticate_keystone(
+                keystone_ip, demo_user.name, 'pass',
+                api_version=int(self._keystone_version),
+                user_domain_name=domain.name,
+                project_domain_name=domain.name,
+                project_name=demo_project.name)
 
         # Authenticate admin with barbican endpoint
         barbican_ep = self.keystone.service_catalog.url_for(
