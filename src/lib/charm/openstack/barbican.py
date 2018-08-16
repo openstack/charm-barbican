@@ -157,6 +157,8 @@ class BarbicanCharm(charms_openstack.charm.HAOpenStackCharm):
         ]),
     }
 
+    group = "barbican"
+
     def get_amqp_credentials(self):
         """Provide the default amqp username and vhost as a tuple.
 
