@@ -256,3 +256,21 @@ class BarbicanCharm(charms_openstack.charm.HAOpenStackCharm):
             required_relations.append('hsm')
         return super(BarbicanCharm, self).states_to_check(
             required_relations=required_relations)
+
+
+class BarbicanCharmRocky(BarbicanCharm):
+
+    release = 'rocky'
+
+    packages = [
+        'barbican-common', 'barbican-api', 'barbican-worker',
+        'python3-barbican', 'libapache2-mod-wsgi-py3',
+        'python-apt',  # NOTE: workaround for hacluster suboridinate
+    ]
+
+    purge_packages = [
+        'python-barbican',
+        'python-mysqldb'
+    ]
+
+    python_version = 3
