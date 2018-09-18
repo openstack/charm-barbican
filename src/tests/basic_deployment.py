@@ -478,30 +478,21 @@ class BarbicanBasicDeployment(OpenStackAmuletDeployment):
         self.d.configure(juju_service, set_default)
         u.log.debug('OK')
 
-    def _test_910_pause_and_resume(self):
+    def _assert_services(self, should_run):
+        services = ('barbican-worker', )
+        u.get_unit_process_ids(
+            {self.barbican_sentry: services},
+            expect_success=should_run)
+
+    def test_910_pause_and_resume(self):
         """The services can be paused and resumed. """
-        # test disabled as feature is not implemented yet - kept for future
-        # usage.
-        return
-        u.log.debug('Checking pause and resume actions...')
-        unit_name = "barbican/0"
-        juju_service = 'barbican'
-        unit = self.d.sentry[juju_service][0]
-
-        assert u.status_get(unit)[0] == "active"
-
-        action_id = u.run_action(unit_name, "pause")
+        self._assert_services(should_run=True)
+        action_id = u.run_action(self.barbican_sentry, "pause")
         assert u.wait_on_action(action_id), "Pause action failed."
-        assert u.status_get(unit)[0] == "maintenance"
 
-        # trigger config-changed to ensure that services are still stopped
-        u.log.debug("Making config change on barbican ...")
-        self.d.configure(juju_service, {'debug': 'True'})
-        assert u.status_get(unit)[0] == "maintenance"
-        self.d.configure(juju_service, {'debug': 'False'})
-        assert u.status_get(unit)[0] == "maintenance"
+        self._assert_services(should_run=False)
 
-        action_id = u.run_action(unit_name, "resume")
-        assert u.wait_on_action(action_id), "Resume action failed."
-        assert u.status_get(unit)[0] == "active"
+        action_id = u.run_action(self.barbican_sentry, "resume")
+        assert u.wait_on_action(action_id), "Resume action failed"
+        self._assert_services(should_run=True)
         u.log.debug('OK')
