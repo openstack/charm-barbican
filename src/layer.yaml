@@ -4,6 +4,7 @@ includes:
   - interface:rabbitmq
   - interface:keystone
   - interface:barbican-hsm
+  - interface:barbican-secrets
 repo: https://github.com/openstack/charm-barbican
 options:
   basic:

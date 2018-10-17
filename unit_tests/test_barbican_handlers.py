@@ -38,6 +38,7 @@ class TestRegisteredHooks(test_utils.TestRegisteredHooks):
                 'render_stuff': ('shared-db.available',
                                  'identity-service.available',
                                  'amqp.available',),
+                'secrets_plugin_configure': ('secrets.new-plugin',),
             }
         }
         # test that the hooks were registered via the
@@ -45,7 +46,7 @@ class TestRegisteredHooks(test_utils.TestRegisteredHooks):
         self.registered_hooks_test_helper(handlers, hook_set, defaults)
 
 
-class TestRenderStuff(test_utils.PatchHelper):
+class TestBarbicanHandlers(test_utils.PatchHelper):
 
     def test_render_stuff(self):
         barbican_charm = mock.MagicMock()
@@ -56,7 +57,8 @@ class TestRenderStuff(test_utils.PatchHelper):
         self.patch_object(handlers.charm, 'optional_interfaces')
 
         def _optional_interfaces(args, *interfaces):
-            self.assertEqual(interfaces, ('hsm.available', ))
+            self.assertEqual(interfaces, ('hsm.available',
+                                          'secrets.available', ))
             return args + ('hsm', )
 
         self.optional_interfaces.side_effect = _optional_interfaces
@@ -65,3 +67,13 @@ class TestRenderStuff(test_utils.PatchHelper):
         barbican_charm.render_with_interfaces.assert_called_once_with(
             ('arg1', 'arg2', 'hsm'))
         barbican_charm.assess_status.assert_called_once_with()
+
+    def test_secrets_plugin_configure(self):
+        self.patch_object(handlers.reactive, 'clear_flag')
+        self.patch_object(handlers.reactive, 'set_flag')
+        handlers.secrets_plugin_configure()
+        self.clear_flag.assert_called_once_with('secrets.new-plugin')
+        self.set_flag.assert_has_calls([
+            mock.call('secrets.available'),
+            mock.call('config.changed'),
+        ])

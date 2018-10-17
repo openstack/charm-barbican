@@ -53,5 +53,16 @@ def render_stuff(*args):
     hookenv.log("about to call the render_configs with {}".format(args))
     with charm.provide_charm_instance() as barbican_charm:
         barbican_charm.render_with_interfaces(
-            charm.optional_interfaces(args, 'hsm.available'))
+            charm.optional_interfaces(args,
+                                      'hsm.available',
+                                      'secrets.available'))
         barbican_charm.assess_status()
+
+
+@reactive.when('secrets.new-plugin')
+def secrets_plugin_configure():
+    hookenv.log('Received information about secrets plugin',
+                level=hookenv.INFO)
+    reactive.clear_flag('secrets.new-plugin')
+    reactive.set_flag('secrets.available')
+    reactive.set_flag('config.changed')

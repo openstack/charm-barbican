@@ -78,6 +78,18 @@ def slot_id(hsm):
         return ''
 
 
+@charms_openstack.adapters.adapter_property('secrets')
+def plugins(secrets):
+    """Provide a plugins property to the template if it exists"""
+    return secrets.relation.plugins
+
+
+@charms_openstack.adapters.adapter_property('secrets')
+def plugins_string(secrets):
+    """Provide a plugins_string property to the template if it exists"""
+    return secrets.relation.plugins_string
+
+
 class BarbicanCharm(charms_openstack.charm.HAOpenStackCharm):
     """BarbicanCharm provides the specialisation of the OpenStackCharm
     functionality to manage a barbican unit.
