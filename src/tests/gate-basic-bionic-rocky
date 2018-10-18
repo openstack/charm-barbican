@@ -6,7 +6,7 @@
 from basic_deployment import BarbicanBasicDeployment
 
 if __name__ == '__main__':
-    deployment = BarbicanBasicDeployment(series='bionic', keystone_version=3,
+    deployment = BarbicanBasicDeployment(series='bionic',
                                          openstack='cloud:bionic-rocky',
                                          source='cloud:bionic-updates/rocky')
     deployment.run_tests()

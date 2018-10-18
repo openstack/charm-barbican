@@ -6,5 +6,5 @@
 from basic_deployment import BarbicanBasicDeployment
 
 if __name__ == '__main__':
-    deployment = BarbicanBasicDeployment(series='cosmic', keystone_version=3)
+    deployment = BarbicanBasicDeployment(series='cosmic')
     deployment.run_tests()
