@@ -19,19 +19,14 @@ u = OpenStackAmuletUtils(DEBUG)
 class BarbicanBasicDeployment(OpenStackAmuletDeployment):
     """Amulet tests on a basic Barbican deployment."""
 
-    def __init__(self, series, openstack=None, source=None, stable=False,
-                 keystone_version='2'):
+    def __init__(self, series, openstack=None, source=None, stable=False):
         """Deploy the entire test environment.
-
-        The keystone_version controls whether keystone (and barbican) are set
-        up to use keystone v2.0 or v3.  The options are <string> 2 or 3.
         """
         super(BarbicanBasicDeployment, self).__init__(
             series, openstack, source, stable)
-        self._keystone_version = str(keystone_version)
         self._add_services()
         self._add_relations()
-        self._configure_services(keystone_version)
+        self._configure_services()
         self._deploy()
 
         u.log.info('Waiting on extended status checks...')
@@ -67,18 +62,15 @@ class BarbicanBasicDeployment(OpenStackAmuletDeployment):
         }
         super(BarbicanBasicDeployment, self)._add_relations(relations)
 
-    def _configure_services(self, keystone_version='2'):
+    def _configure_services(self):
         """Configure all of the services."""
         keystone_config = {
             'admin-password': 'openstack',
             'admin-token': 'ubuntutesting',
-            'preferred-api-version': str(keystone_version),
         }
         # say we don't need an HSM for these tests
         barbican_config = {
             'require-hsm-plugin': False,
-            'verbose': True,
-            'keystone-api-version': str(keystone_version),
         }
         pxc_config = {
             'dataset-size': '25%',
@@ -109,7 +101,7 @@ class BarbicanBasicDeployment(OpenStackAmuletDeployment):
         self.keystone_session, self.keystone = u.get_default_keystone_session(
             self.keystone_sentry,
             openstack_release=self._get_openstack_release(),
-            api_version=int(self._keystone_version))
+            api_version=3)
 
     def test_100_services(self):
         """Verify the expected services are running on the corresponding
@@ -136,27 +128,17 @@ class BarbicanBasicDeployment(OpenStackAmuletDeployment):
 
         actual = self.keystone.service_catalog.get_endpoints()
 
-        if self._keystone_version == '2':
-            endpoint_check = [{
-                'adminURL': u.valid_url,
+        # v3 endpoint check
+        endpoint_check = [
+            {
                 'id': u.not_null,
+                'interface': interface,
                 'region': 'RegionOne',
-                'publicURL': u.valid_url,
-                'internalURL': u.valid_url,
-            }]
-            validate_catalog = u.validate_svc_catalog_endpoint_data
-        else:
-            # v3 endpoint check
-            endpoint_check = [
-                {
-                    'id': u.not_null,
-                    'interface': interface,
-                    'region': 'RegionOne',
-                    'region_id': 'RegionOne',
-                    'url': u.valid_url,
-                }
-                for interface in ('admin', 'public', 'internal')]
-            validate_catalog = u.validate_v3_svc_catalog_endpoint_data
+                'region_id': 'RegionOne',
+                'url': u.valid_url,
+            }
+            for interface in ('admin', 'public', 'internal')]
+        validate_catalog = u.validate_v3_svc_catalog_endpoint_data
 
         expected = {
             'key-manager': endpoint_check,
@@ -176,30 +158,16 @@ class BarbicanBasicDeployment(OpenStackAmuletDeployment):
         u.log.debug(endpoints)
         admin_port = '9312'
         internal_port = public_port = '9311'
-        if self._keystone_version == '2':
-            expected = {'id': u.not_null,
-                        'region': 'RegionOne',
-                        'adminurl': u.valid_url,
-                        'internalurl': u.valid_url,
-                        'publicurl': u.valid_url,
-                        'service_id': u.not_null}
+        # For keystone v3 it's slightly different.
+        expected = {'id': u.not_null,
+                    'region': 'RegionOne',
+                    'region_id': 'RegionOne',
+                    'url': u.valid_url,
+                    'interface': u.not_null,  # we match this in the test
+                    'service_id': u.not_null}
 
-            ret = u.validate_endpoint_data(
-                endpoints, admin_port, internal_port, public_port, expected)
-        elif self._keystone_version == '3':
-            # For keystone v3 it's slightly different.
-            expected = {'id': u.not_null,
-                        'region': 'RegionOne',
-                        'region_id': 'RegionOne',
-                        'url': u.valid_url,
-                        'interface': u.not_null,  # we match this in the test
-                        'service_id': u.not_null}
-
-            ret = u.validate_v3_endpoint_data(
-                endpoints, admin_port, internal_port, public_port, expected)
-        else:
-            raise RuntimeError("Unexpected self._keystone_version: {}"
-                               .format(self._keystone_version))
+        ret = u.validate_v3_endpoint_data(
+            endpoints, admin_port, internal_port, public_port, expected)
 
         if ret:
             message = 'barbican endpoint: {}'.format(ret)
@@ -332,97 +300,59 @@ class BarbicanBasicDeployment(OpenStackAmuletDeployment):
         # a demo user, demo project, and then get a demo barbican client and do
         # the secret.  ensure that the default domain is created.
 
-        if self._keystone_version == '2':
-            # find or create the 'demo' tenant (project)
-            tenant = self._find_or_create(
-                items=self.keystone.tenants.list(),
-                key=lambda t: t.name == 'demo',
-                create=lambda: self.keystone.tenants.create(
-                    tenant_name="demo",
-                    description="Demo for testing barbican",
-                    enabled=True))
-            # find or create the demo user
-            demo_user = self._find_or_create(
-                items=self.keystone.users.list(),
-                key=lambda u: u.name == 'demo',
-                create=lambda: self.keystone.users.create(
-                    name='demo',
-                    password='pass',
-                    tenant_id=tenant.id))
-            # find the admin role
-            # already be created - if not, then this will fail later.
-            admin_role = self._find_or_create(
-                items=self.keystone.roles.list(),
-                key=lambda r: r.name.lower() == 'admin',
-                create=lambda: None)
-            # grant the role if it isn't already created.
-            # now grant the creator role to the demo user.
-            self._find_or_create(
-                items=self.keystone.roles.roles_for_user(
-                    demo_user, tenant=tenant),
-                key=lambda r: r.name.lower() == admin_role.name.lower(),
-                create=lambda: self.keystone.roles.add_user_role(
-                    demo_user, admin_role, tenant=tenant))
-
-            self.keystone_demo = u.authenticate_keystone_user(
-                self.keystone, user='demo',
-                password='pass', tenant='demo')
-
-        else:
-            # find or create the 'default' domain
-            domain = self._find_or_create(
-                items=self.keystone.domains.list(),
-                key=lambda u: u.name == 'default',
-                create=lambda: self.keystone.domains.create(
-                    "default",
-                    description="domain for barbican testing",
-                    enabled=True))
-            # find or create the 'demo' user
-            demo_user = self._find_or_create(
-                items=self.keystone.users.list(domain=domain.id),
-                key=lambda u: u.name == 'demo',
-                create=lambda: self.keystone.users.create(
-                    'demo',
-                    domain=domain.id,
-                    description="Demo user for barbican tests",
-                    enabled=True,
-                    email="demo@example.com",
-                    password="pass"))
-            # find or create the 'demo' project
-            demo_project = self._find_or_create(
-                items=self.keystone.projects.list(domain=domain.id),
-                key=lambda x: x.name == 'demo',
-                create=lambda: self.keystone.projects.create(
-                    'demo',
-                    domain=domain.id,
-                    description='barbican testing project',
-                    enabled=True))
-            # create the role for the user - needs to be admin so that the
-            # secret can be deleted - note there is only one admin role, and it
-            # should already be created - if not, then this will fail later.
-            admin_role = self._find_or_create(
-                items=self.keystone.roles.list(),
-                key=lambda r: r.name.lower() == 'admin',
-                create=lambda: None)
-            # now grant the creator role to the demo user.
-            try:
-                self.keystone.roles.check(
-                    role=admin_role,
-                    user=demo_user,
-                    project=demo_project)
-            except keystoneclient.exceptions.NotFound:
-                # create it if it isn't found
-                self.keystone.roles.grant(
-                    role=admin_role,
-                    user=demo_user,
-                    project=demo_project)
-            keystone_ip = self.keystone_sentry.info['public-address']
-            self.keystone_demo = u.authenticate_keystone(
-                keystone_ip, demo_user.name, 'pass',
-                api_version=int(self._keystone_version),
-                user_domain_name=domain.name,
-                project_domain_name=domain.name,
-                project_name=demo_project.name)
+        # find or create the 'default' domain
+        domain = self._find_or_create(
+            items=self.keystone.domains.list(),
+            key=lambda u: u.name == 'default',
+            create=lambda: self.keystone.domains.create(
+                "default",
+                description="domain for barbican testing",
+                enabled=True))
+        # find or create the 'demo' user
+        demo_user = self._find_or_create(
+            items=self.keystone.users.list(domain=domain.id),
+            key=lambda u: u.name == 'demo',
+            create=lambda: self.keystone.users.create(
+                'demo',
+                domain=domain.id,
+                description="Demo user for barbican tests",
+                enabled=True,
+                email="demo@example.com",
+                password="pass"))
+        # find or create the 'demo' project
+        demo_project = self._find_or_create(
+            items=self.keystone.projects.list(domain=domain.id),
+            key=lambda x: x.name == 'demo',
+            create=lambda: self.keystone.projects.create(
+                'demo',
+                domain=domain.id,
+                description='barbican testing project',
+                enabled=True))
+        # create the role for the user - needs to be admin so that the
+        # secret can be deleted - note there is only one admin role, and it
+        # should already be created - if not, then this will fail later.
+        admin_role = self._find_or_create(
+            items=self.keystone.roles.list(),
+            key=lambda r: r.name.lower() == 'admin',
+            create=lambda: None)
+        # now grant the creator role to the demo user.
+        try:
+            self.keystone.roles.check(
+                role=admin_role,
+                user=demo_user,
+                project=demo_project)
+        except keystoneclient.exceptions.NotFound:
+            # create it if it isn't found
+            self.keystone.roles.grant(
+                role=admin_role,
+                user=demo_user,
+                project=demo_project)
+        keystone_ip = self.keystone_sentry.info['public-address']
+        self.keystone_demo = u.authenticate_keystone(
+            keystone_ip, demo_user.name, 'pass', api_version=3,
+            user_domain_name=domain.name,
+            project_domain_name=domain.name,
+            project_name=demo_project.name)
 
         # Authenticate admin with barbican endpoint
         barbican_ep = self.keystone.service_catalog.url_for(

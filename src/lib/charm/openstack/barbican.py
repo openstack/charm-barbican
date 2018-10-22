@@ -26,8 +26,11 @@ import charms_openstack.charm
 import charms_openstack.adapters
 import charms_openstack.ip as os_ip
 
-PACKAGES = ['barbican-common', 'barbican-api', 'barbican-worker',
-            'python-mysqldb']
+PACKAGES = [
+    'barbican-common', 'barbican-api', 'barbican-worker',
+    'python3-barbican', 'libapache2-mod-wsgi-py3',
+    'python-apt',  # NOTE: workaround for hacluster suboridinate
+]
 BARBICAN_DIR = '/etc/barbican/'
 BARBICAN_CONF = BARBICAN_DIR + "barbican.conf"
 BARBICAN_API_PASTE_CONF = BARBICAN_DIR + "barbican-api-paste.ini"
@@ -42,43 +45,6 @@ charms_openstack.charm.use_defaults('charm.default-select-release')
 
 ###
 # Implementation of the Barbican Charm classes
-
-# Add some properties to the configuration for templates/code to use with the
-# charm instance.  The config_validator is called when the configuration is
-# loaded, and the properties are to add those names to the config object.
-
-@charms_openstack.adapters.config_property
-def validate_keystone_api_version(config):
-    if config.keystone_api_version not in ['2', '3', 'none']:
-        raise ValueError(
-            "Unsupported keystone-api-version ({}). It should be 2 or 3"
-            .format(config.keystone_api_version))
-
-
-@charms_openstack.adapters.config_property
-def barbican_api_keystone_pipeline(config):
-    if config.keystone_api_version == "2":
-        return 'cors http_proxy_to_wsgi keystone_authtoken context apiapp'
-    else:
-        return 'cors http_proxy_to_wsgi keystone_v3_authtoken context apiapp'
-
-
-@charms_openstack.adapters.config_property
-def barbican_api_pipeline(config):
-    return {
-        "2": "cors http_proxy_to_wsgi keystone_authtoken context apiapp",
-        "3": "cors http_proxy_to_wsgi keystone_v3_authtoken context apiapp",
-        "none": "cors http_proxy_to_wsgi unauthenticated-context apiapp"
-    }[config.keystone_api_version]
-
-
-@charms_openstack.adapters.config_property
-def barbican_api_keystone_audit_pipeline(config):
-    if config.keystone_api_version == "2":
-        return 'http_proxy_to_wsgi keystone_authtoken context audit apiapp'
-    else:
-        return 'http_proxy_to_wsgi keystone_v3_authtoken context audit apiapp'
-
 
 # Adapt the barbican-hsm-plugin relation for use in rendering the config
 # for Barbican.  Note that the HSM relation is optional, so we have a class
@@ -117,9 +83,14 @@ class BarbicanCharm(charms_openstack.charm.HAOpenStackCharm):
     functionality to manage a barbican unit.
     """
 
-    release = 'mitaka'
+    release = 'rocky'
     name = 'barbican'
     packages = PACKAGES
+    purge_packages = [
+        'python-barbican',
+        'python-mysqldb'
+    ]
+    python_version = 3
     api_ports = {
         'barbican-worker': {
             os_ip.PUBLIC: 9311,
@@ -148,11 +119,6 @@ class BarbicanCharm(charms_openstack.charm.HAOpenStackCharm):
     # Package codename map for barbican-common
     package_codenames = {
         'barbican-common': collections.OrderedDict([
-            ('2', 'mitaka'),
-            ('3', 'newton'),
-            ('4', 'ocata'),
-            ('5', 'pike'),
-            ('6', 'queens'),
             ('7', 'rocky'),
         ]),
     }
@@ -164,7 +130,7 @@ class BarbicanCharm(charms_openstack.charm.HAOpenStackCharm):
 
         :returns (username, host): two strings to send to the amqp provider.
         """
-        return (self.config['rabbit-user'], self.config['rabbit-vhost'])
+        return ('barbican', 'openstack')
 
     def get_database_setup(self):
         """Provide the default database credentials as a list of 3-tuples
@@ -181,8 +147,8 @@ class BarbicanCharm(charms_openstack.charm.HAOpenStackCharm):
         """
         return [
             dict(
-                database=self.config['database'],
-                username=self.config['database-user'], )
+                database='barbican',
+                username='barbican', )
         ]
 
     def action_generate_mkek(self, hsm):
@@ -256,21 +222,3 @@ class BarbicanCharm(charms_openstack.charm.HAOpenStackCharm):
             required_relations.append('hsm')
         return super(BarbicanCharm, self).states_to_check(
             required_relations=required_relations)
-
-
-class BarbicanCharmRocky(BarbicanCharm):
-
-    release = 'rocky'
-
-    packages = [
-        'barbican-common', 'barbican-api', 'barbican-worker',
-        'python3-barbican', 'libapache2-mod-wsgi-py3',
-        'python-apt',  # NOTE: workaround for hacluster suboridinate
-    ]
-
-    purge_packages = [
-        'python-barbican',
-        'python-mysqldb'
-    ]
-
-    python_version = 3
