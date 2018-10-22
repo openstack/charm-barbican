@@ -24,3 +24,6 @@ requires:
   hsm:
     interface: barbican-hsm
     optional: true
+  secrets:
+    interface: barbican-secrets
+    optional: true

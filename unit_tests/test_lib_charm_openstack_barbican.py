@@ -61,6 +61,21 @@ class TestHSMProperties(Helper):
         self.assertEqual(barbican.slot_id(hsm), 'a-slot_id')
 
 
+class TestSecretsProperties(Helper):
+
+    def test_plugins(self):
+        secrets = mock.MagicMock()
+        plugins = {'name': 'a-name'}
+        secrets.relation.plugins = plugins
+        self.assertEqual(barbican.plugins(secrets), plugins)
+
+    def test_plugins_string(self):
+        secrets = mock.MagicMock()
+        plugins_string = 'a-name_plugin'
+        secrets.relation.plugins_string = plugins_string
+        self.assertEqual(barbican.plugins_string(secrets), plugins_string)
+
+
 class TestBarbicanCharm(Helper):
 
     def test_action_generate_mkek(self):
