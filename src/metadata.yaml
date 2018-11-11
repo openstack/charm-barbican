@@ -8,9 +8,6 @@ description: |
 tags:
   - openstack
 series:
-# Trusty disabled pending https://bugs.launchpad.net/bugs/1609498
-# - trusty
-  - xenial
   - bionic
   - cosmic
 subordinate: false
