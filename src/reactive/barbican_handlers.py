@@ -33,7 +33,9 @@ charm.use_defaults(
     'identity-service.connected',
     'identity-service.available',  # enables SSL support
     'config.changed',
-    'update-status')
+    'update-status',
+    'upgrade-charm',
+)
 
 
 # Note that because of the way reactive.when works, (which is to 'find' the
