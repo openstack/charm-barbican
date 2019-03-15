@@ -39,7 +39,11 @@ class TestRegisteredHooks(test_utils.TestRegisteredHooks):
                                  'identity-service.available',
                                  'amqp.available',),
                 'secrets_plugin_configure': ('secrets.new-plugin',),
-            }
+                'cluster_connected': ('ha.connected',),
+            },
+            'when_not': {
+                'cluster_connected': ('ha.available',),
+            },
         }
         # test that the hooks were registered via the
         # reactive.barbican_handlers
@@ -77,3 +81,15 @@ class TestBarbicanHandlers(test_utils.PatchHelper):
             mock.call('secrets.available'),
             mock.call('config.changed'),
         ])
+
+    def test_cluster_connected(self):
+        hacluster = mock.MagicMock()
+        barbican_charm = mock.MagicMock()
+        self.patch_object(handlers.charm, 'provide_charm_instance',
+                          new=mock.MagicMock())
+        self.provide_charm_instance().__enter__.return_value = barbican_charm
+        self.provide_charm_instance().__exit__.return_value = None
+        handlers.cluster_connected(hacluster)
+        barbican_charm.configure_ha_resources.assert_called_once_with(
+            hacluster)
+        barbican_charm.assess_status.assert_called_once_with()

@@ -123,7 +123,7 @@ class BarbicanCharm(charms_openstack.charm.HAOpenStackCharm):
         BARBICAN_WSGI_CONF: services,
     }
 
-    ha_resources = ['vips', 'haproxy']
+    ha_resources = ['vips', 'haproxy', 'dnsha']
 
     # Package for release version detection
     release_pkg = 'barbican-common'

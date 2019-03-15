@@ -68,3 +68,12 @@ def secrets_plugin_configure():
     reactive.clear_flag('secrets.new-plugin')
     reactive.set_flag('secrets.available')
     reactive.set_flag('config.changed')
+
+
+@reactive.when('ha.connected')
+@reactive.when_not('ha.available')
+def cluster_connected(hacluster):
+    """Configure HA resources in corosync."""
+    with charm.provide_charm_instance() as barbican_charm:
+        barbican_charm.configure_ha_resources(hacluster)
+        barbican_charm.assess_status()
