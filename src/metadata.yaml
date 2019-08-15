@@ -9,8 +9,8 @@ tags:
   - openstack
 series:
   - bionic
-  - cosmic
   - disco
+  - eoan
 subordinate: false
 requires:
   shared-db:
