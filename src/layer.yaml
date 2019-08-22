@@ -8,7 +8,8 @@ includes:
 repo: https://github.com/openstack/charm-barbican
 options:
   basic:
-    use_venv: true
+    use_venv: True
+    include_system_packages: False
 config:
   deletes:
     - verbose
