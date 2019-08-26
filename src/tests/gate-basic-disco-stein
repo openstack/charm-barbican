@@ -1,0 +1,10 @@
+#!/usr/bin/env python
+
+"""Amulet tests on a basic barbican deployment on disco-stein."""
+
+from basic_deployment import BarbicanBasicDeployment
+
+if __name__ == '__main__':
+    deployment = BarbicanBasicDeployment(series='disco')
+    deployment.run_tests()
+
