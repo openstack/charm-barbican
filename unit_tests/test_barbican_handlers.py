@@ -30,9 +30,9 @@ class TestRegisteredHooks(test_utils.TestRegisteredHooks):
             'amqp.connected',
             'shared-db.connected',
             'identity-service.connected',
-            'identity-service.available',  # enables SSL support
             'config.changed',
-            'update-status']
+            'update-status',
+            'certificates.available']
         hook_set = {
             'when': {
                 'render_stuff': ('shared-db.available',

@@ -31,10 +31,10 @@ charm.use_defaults(
     'amqp.connected',
     'shared-db.connected',
     'identity-service.connected',
-    'identity-service.available',  # enables SSL support
     'config.changed',
     'update-status',
     'upgrade-charm',
+    'certificates.available',
 )
 
 
