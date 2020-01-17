@@ -132,6 +132,9 @@ class BarbicanCharm(charms_openstack.charm.HAOpenStackCharm):
     package_codenames = {
         'barbican-common': collections.OrderedDict([
             ('7', 'rocky'),
+            ('8', 'stein'),
+            ('9', 'train'),
+            ('10', 'ussuri'),
         ]),
     }
 
