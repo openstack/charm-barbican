@@ -58,6 +58,7 @@ def render_stuff(*args):
             charm.optional_interfaces(args,
                                       'hsm.available',
                                       'secrets.available'))
+        barbican_charm.configure_ssl()
         barbican_charm.assess_status()
 
 
