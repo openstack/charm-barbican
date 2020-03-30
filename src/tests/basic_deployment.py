@@ -66,7 +66,6 @@ class BarbicanBasicDeployment(OpenStackAmuletDeployment):
         """Configure all of the services."""
         keystone_config = {
             'admin-password': 'openstack',
-            'admin-token': 'ubuntutesting',
         }
         # say we don't need an HSM for these tests
         barbican_config = {
@@ -209,7 +208,6 @@ class BarbicanBasicDeployment(OpenStackAmuletDeployment):
         id_relation = unit.relation(*relation)
         id_ip = id_relation['private-address']
         expected = {
-            'admin_token': 'ubuntutesting',
             'auth_host': id_ip,
             'auth_port': "35357",
             'auth_protocol': 'http',
@@ -303,7 +301,7 @@ class BarbicanBasicDeployment(OpenStackAmuletDeployment):
         # find or create the 'default' domain
         domain = self._find_or_create(
             items=self.keystone.domains.list(),
-            key=lambda u: u.name == 'default',
+            key=lambda u: u.name.lower() == 'default',
             create=lambda: self.keystone.domains.create(
                 "default",
                 description="domain for barbican testing",
