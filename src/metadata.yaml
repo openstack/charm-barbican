@@ -2,15 +2,16 @@ name: barbican
 summary: A REST API for secure storage, provisioning and management of secrets
 maintainer: OpenStack Charmers <openstack-charmers@lists.ubuntu.com>
 description: |
- Barbican is a REST API designed for the secure storage, provisioning and
- management of secrets such as passwords and encryption keys. It is aimed at
- being useful for all environments, including large ephemeral Clouds
+  Barbican is a REST API designed for the secure storage, provisioning and
+  management of secrets such as passwords and encryption keys. It is aimed at
+  being useful for all environments, including large ephemeral Clouds
 tags:
-  - openstack
+- openstack
 series:
-  - bionic
-  - eoan
-  - focal
+- bionic
+- eoan
+- focal
+- groovy
 subordinate: false
 requires:
   shared-db:
