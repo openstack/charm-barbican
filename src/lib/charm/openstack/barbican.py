@@ -15,7 +15,6 @@
 
 # bare functions are provided to the reactive handlers to perform the functions
 # needed on the class.
-from __future__ import absolute_import
 
 import collections
 import subprocess
