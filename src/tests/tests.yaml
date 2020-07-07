@@ -7,5 +7,11 @@ gate_bundles:
 - bionic-train
 - bionic-stein
 - bionic-rocky
+dev_bundles:
+- groovy-victoria
+- focal-victoria
 tests:
 - zaza.openstack.charm_tests.barbican.tests.BarbicanTest
+tests_options:
+  force_deploy:
+    - groovy-victoria
