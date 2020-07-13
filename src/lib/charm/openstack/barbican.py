@@ -134,6 +134,7 @@ class BarbicanCharm(charms_openstack.charm.HAOpenStackCharm):
             ('8', 'stein'),
             ('9', 'train'),
             ('10', 'ussuri'),
+            ('11', 'victoria'),
         ]),
     }
 
