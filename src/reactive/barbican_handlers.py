@@ -13,7 +13,6 @@
 # limitations under the License.
 
 # this is just for the reactive handlers and calls into the charm.
-from __future__ import absolute_import
 
 import charms.reactive as reactive
 import charmhelpers.core.hookenv as hookenv
