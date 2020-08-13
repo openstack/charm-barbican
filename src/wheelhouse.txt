@@ -1,1 +1,5 @@
 psutil
+
+git+https://opendev.org/openstack/charms.openstack.git@stable/20.08#egg=charms.openstack
+
+git+https://github.com/juju/charm-helpers.git@stable/20.08#egg=charmhelpers
