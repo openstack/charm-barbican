@@ -2,6 +2,7 @@ charm_name: barbican
 smoke_bundles:
 - focal-ussuri
 gate_bundles:
+- focal-victoria
 - focal-ussuri
 - bionic-ussuri
 - bionic-train
@@ -9,7 +10,6 @@ gate_bundles:
 - bionic-rocky
 dev_bundles:
 - groovy-victoria
-- focal-victoria
 tests:
 - zaza.openstack.charm_tests.barbican.tests.BarbicanTest
 tests_options:
