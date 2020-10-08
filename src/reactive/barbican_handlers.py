@@ -60,6 +60,20 @@ def render_stuff(*args):
                                       'secrets.available'))
         barbican_charm.configure_ssl()
         barbican_charm.assess_status()
+    reactive.set_flag('first-render')
+
+
+@reactive.when('leadership.is_leader')
+@reactive.when('charm.installed')
+@reactive.when('shared-db.available')
+@reactive.when('first-render')
+@reactive.when_not('db.synced')
+def run_db_migration():
+    with charm.provide_charm_instance() as barbican_charm:
+        barbican_charm.db_sync()
+        barbican_charm.restart_all()
+        reactive.set_state('db.synced')
+        barbican_charm.assess_status()
 
 
 @reactive.when('secrets.new-plugin')

@@ -145,6 +145,9 @@ class BarbicanCharm(charms_openstack.charm.HAOpenStackCharm):
 
     group = "barbican"
 
+    # This is the command to sync the database
+    sync_cmd = ['sudo', '-u', 'barbican', 'barbican-manage', 'db', 'upgrade']
+
     def get_amqp_credentials(self):
         """Provide the default amqp username and vhost as a tuple.
 
