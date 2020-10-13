@@ -30,6 +30,11 @@ PACKAGES = [
     'python3-barbican', 'libapache2-mod-wsgi-py3',
     'python-apt',  # NOTE: workaround for hacluster suboridinate
 ]
+PACKAGES_VICTORIA = [
+    'barbican-common', 'barbican-api', 'barbican-worker',
+    'python3-barbican', 'libapache2-mod-wsgi-py3',
+    'python3-apt',  # NOTE: workaround for hacluster suboridinate
+]
 BARBICAN_DIR = '/etc/barbican/'
 BARBICAN_CONF = BARBICAN_DIR + "barbican.conf"
 BARBICAN_API_PASTE_CONF = BARBICAN_DIR + "barbican-api-paste.ini"
@@ -237,3 +242,10 @@ class BarbicanCharm(charms_openstack.charm.HAOpenStackCharm):
             required_relations.append('hsm')
         return super(BarbicanCharm, self).states_to_check(
             required_relations=required_relations)
+
+
+class BarbicanCharmVictoria(BarbicanCharm):
+
+    release = 'victoria'
+
+    packages = PACKAGES_VICTORIA
