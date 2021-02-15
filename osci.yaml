@@ -1,0 +1,17 @@
+- project:
+    templates:
+      - charm-unit-jobs
+      # using overridden, shorter functional list because the charm does
+      # already in the tests.yaml
+      # - charm-functional-jobs
+    check:
+      jobs:
+      - groovy-victoria
+      - focal-victoria
+      - focal-ussuri
+      - bionic-ussuri
+      - bionic-train
+      - bionic-stein
+    vars:
+      needs_charm_build: true
+      charm_build_name: barbican
