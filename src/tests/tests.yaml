@@ -8,6 +8,7 @@ gate_bundles:
 - bionic-ussuri
 - bionic-train
 - bionic-stein
+dev_bundles:
 - bionic-rocky
 tests:
 - zaza.openstack.charm_tests.barbican.tests.BarbicanTest
