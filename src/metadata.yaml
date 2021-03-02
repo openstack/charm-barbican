@@ -11,6 +11,7 @@ series:
 - bionic
 - focal
 - groovy
+- hirsute
 subordinate: false
 requires:
   shared-db:
