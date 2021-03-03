@@ -3,15 +3,17 @@ smoke_bundles:
 - focal-ussuri
 gate_bundles:
 - groovy-victoria
+- focal-wallaby
 - focal-victoria
 - focal-ussuri
 - bionic-ussuri
 - bionic-train
 - bionic-stein
 dev_bundles:
+- hirsute-wallaby
 - bionic-rocky
 tests:
 - zaza.openstack.charm_tests.barbican.tests.BarbicanTest
 tests_options:
   force_deploy:
-    - groovy-victoria
+    - hirsute-wallaby
