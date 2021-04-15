@@ -37,9 +37,14 @@ class TestRegisteredHooks(test_utils.TestRegisteredHooks):
                                  'amqp.available',),
                 'secrets_plugin_configure': ('secrets.new-plugin',),
                 'cluster_connected': ('ha.connected',),
+                'run_db_migration': ('leadership.is_leader',
+                                     'charm.installed',
+                                     'shared-db.available',
+                                     'first-render',),
             },
             'when_not': {
                 'cluster_connected': ('ha.available',),
+                'run_db_migration': ('db.synced',),
             },
         }
         # test that the hooks were registered via the
