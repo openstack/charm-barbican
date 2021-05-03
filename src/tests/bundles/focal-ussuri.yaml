@@ -17,12 +17,12 @@ machines:
 applications:
 
   keystone-mysql-router:
-    charm: cs:~openstack-charmers-next/mysql-router
+    charm: cs:~openstack-charmers/mysql-router
   barbican-mysql-router:
-    charm: cs:~openstack-charmers-next/mysql-router
+    charm: cs:~openstack-charmers/mysql-router
 
   mysql-innodb-cluster:
-    charm: cs:~openstack-charmers-next/mysql-innodb-cluster
+    charm: cs:~openstack-charmers/mysql-innodb-cluster
     num_units: 3
     options:
       source: *openstack-origin
@@ -32,7 +32,7 @@ applications:
       - '2'
 
   keystone:
-    charm: cs:~openstack-charmers-next/keystone
+    charm: cs:~openstack-charmers/keystone
     num_units: 1
     options:
       openstack-origin: *openstack-origin
@@ -50,7 +50,7 @@ applications:
       - '4'
 
   rabbitmq-server:
-    charm: cs:~openstack-charmers-next/rabbitmq-server
+    charm: cs:~openstack-charmers/rabbitmq-server
     num_units: 1
     to:
       - '5'
