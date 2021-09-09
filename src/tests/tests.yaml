@@ -2,7 +2,9 @@ charm_name: barbican
 smoke_bundles:
 - focal-ussuri
 gate_bundles:
+- impish-xena
 - groovy-victoria
+- focal-xena
 - focal-wallaby
 - focal-victoria
 - focal-ussuri
@@ -17,3 +19,5 @@ tests:
 tests_options:
   force_deploy:
     - hirsute-wallaby
+    - groovy-victoria
+    - impish-xena
