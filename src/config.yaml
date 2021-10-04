@@ -34,3 +34,13 @@ options:
     default: 32
     type: int
     description: The length for generating an HMAC
+  max-allowed-secret-size:
+    default: 20000
+    type: int
+    description: |
+      Maximum allowed secret size in bytes.
+  max-allowed-request-size:
+    default: 25000
+    type: int
+    description: |
+      Maximum allowed http request size against the barbican-api.
