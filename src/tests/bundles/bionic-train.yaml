@@ -14,7 +14,6 @@ applications:
     num_units: 1
     to:
       - '0'
-    channel: candidate
 
   keystone:
     charm: cs:~openstack-charmers/keystone
@@ -23,7 +22,6 @@ applications:
       openstack-origin: cloud:bionic-train
     to:
       - '1'
-    channel: candidate
 
   barbican:
     series: bionic
@@ -40,7 +38,6 @@ applications:
     num_units: 1
     to:
       - '3'
-    channel: candidate
 
 relations:
 - - mysql:shared-db
