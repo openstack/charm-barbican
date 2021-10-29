@@ -6,18 +6,20 @@
       # - charm-functional-jobs
     check:
       jobs:
-      - impish-xena:
+      - bionic-stein
+      - bionic-train
+      - bionic-ussuri
+      - focal-ussuri
+      - focal-victoria
+      - focal-wallaby
+      - focal-xena
+      - focal-yoga:
           voting: false
       - hirsute-wallaby
-      - groovy-victoria
-      - focal-xena:
+      - impish-xena:
           voting: false
-      - focal-wallaby
-      - focal-victoria
-      - focal-ussuri
-      - bionic-ussuri
-      - bionic-train
-      - bionic-stein
+      - jammy-yoga:
+          voting: false
     vars:
       needs_charm_build: true
       charm_build_name: barbican
