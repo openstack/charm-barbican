@@ -1,25 +1,12 @@
 - project:
     templates:
-      - charm-unit-jobs
-      # using overridden, shorter functional list because the charm does
-      # already in the tests.yaml
-      # - charm-functional-jobs
-    check:
-      jobs:
-      - bionic-stein
-      - bionic-train
-      - bionic-ussuri
-      - focal-ussuri
-      - focal-victoria
-      - focal-wallaby
-      - focal-xena
-      - focal-yoga:
-          voting: false
-      - hirsute-wallaby
-      - impish-xena:
-          voting: false
-      - jammy-yoga:
-          voting: false
+      - charm-yoga-unit-jobs
+      - charm-yoga-functional-jobs
+      - charm-xena-functional-jobs
+      - charm-wallaby-functional-jobs
+      - charm-victoria-functional-jobs
+      - charm-ussuri-functional-jobs
+      - charm-stein-functional-jobs
     vars:
       needs_charm_build: true
       charm_build_name: barbican
