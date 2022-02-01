@@ -7,3 +7,4 @@
     vars:
       needs_charm_build: true
       charm_build_name: barbican
+      build_type: charmcraft
