@@ -44,3 +44,5 @@ options:
     type: int
     description: |
       Maximum allowed http request size against the barbican-api.
+  use-internal-endpoints:
+    default: True
