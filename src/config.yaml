@@ -46,3 +46,5 @@ options:
       Maximum allowed http request size against the barbican-api.
   openstack-origin:
     default: yoga
+  use-internal-endpoints:
+    default: True
