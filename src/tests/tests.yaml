@@ -1,23 +1,10 @@
 charm_name: barbican
-smoke_bundles:
-- focal-ussuri
+smoke_bundles: []
 gate_bundles:
-- impish-xena
-- groovy-victoria
-- focal-xena
-- focal-wallaby
 - focal-victoria
-- focal-ussuri
-- bionic-ussuri
-- bionic-train
-- bionic-stein
-dev_bundles:
-- hirsute-wallaby
-- bionic-rocky
+- focal-wallaby
+dev_bundles: []
 tests:
 - zaza.openstack.charm_tests.barbican.tests.BarbicanTest
 tests_options:
-  force_deploy:
-    - hirsute-wallaby
-    - groovy-victoria
-    - impish-xena
+  force_deploy: []

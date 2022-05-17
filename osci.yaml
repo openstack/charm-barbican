@@ -1,23 +1,9 @@
 - project:
     templates:
-      - charm-unit-jobs
-      # using overridden, shorter functional list because the charm does
-      # already in the tests.yaml
-      # - charm-functional-jobs
-    check:
-      jobs:
-      - impish-xena:
-          voting: false
-      - hirsute-wallaby
-      - groovy-victoria
-      - focal-xena:
-          voting: false
-      - focal-wallaby
-      - focal-victoria
-      - focal-ussuri
-      - bionic-ussuri
-      - bionic-train
-      - bionic-stein
+      - charm-unit-jobs-py38
+      - charm-victoria-functional-jobs
+      - charm-wallaby-functional-jobs
     vars:
       needs_charm_build: true
       charm_build_name: barbican
+      build_type: charmcraft
