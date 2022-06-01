@@ -3,7 +3,7 @@ options:
     default: False
     type: boolean
     description: |
-      If True (the default) then the barbcian-worker process won't be fully
+      If True then the barbcian-worker process won't be fully
       functional until an HSM is associated with the charm. The charm will
       remain in the blocked state until an HSM is available.
   label-mkek:
