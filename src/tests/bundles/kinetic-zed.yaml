@@ -1,9 +1,9 @@
 variables:
-  openstack-origin: &openstack-origin cloud:focal-xena
+  openstack-origin: &openstack-origin distro
 
 local_overlay_enabled: False
 
-series: &series focal
+series: &series kinetic
 
 machines:
   '0':

@@ -1,15 +1,14 @@
 charm_name: barbican
 smoke_bundles:
-- focal-xena
-gate_bundles:
-- focal-xena
-- impish-xena
-dev_bundles:
-- focal-yoga
 - jammy-yoga
+gate_bundles:
+- jammy-yoga
+dev_bundles:
+- jammy-yoga
+- jammy-zed
+- kinetic-zed
 tests:
 - zaza.openstack.charm_tests.barbican.tests.BarbicanTest
 tests_options:
   force_deploy:
-    - impish-xena
-    - jammy-yoga
+    - kinetic-zed
