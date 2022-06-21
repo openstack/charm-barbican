@@ -1,3 +1,5 @@
+local_overlay_enabled: False
+
 series: bionic
 
 machines:
@@ -10,22 +12,24 @@ machines:
 applications:
 
   mysql:
-    charm: cs:~openstack-charmers/percona-cluster
+    charm: ch:percona-cluster
     num_units: 1
     to:
       - '0'
+    channel: 5.7/edge
 
   keystone:
-    charm: cs:~openstack-charmers/keystone
+    charm: ch:keystone
     num_units: 1
     options:
       openstack-origin: cloud:bionic-stein
     to:
       - '1'
+    channel: train/edge
 
   barbican:
     series: bionic
-    charm: ../../../barbican
+    charm: ../../../barbican.charm
     num_units: 1
     options:
       openstack-origin: cloud:bionic-stein
@@ -34,10 +38,11 @@ applications:
       - '2'
 
   rabbitmq-server:
-    charm: cs:~openstack-charmers/rabbitmq-server
+    charm: ch:rabbitmq-server
     num_units: 1
     to:
       - '3'
+    channel: 3.6/edge
 
 relations:
 - - mysql:shared-db

@@ -9,10 +9,6 @@ tags:
 - openstack
 series:
 - bionic
-- focal
-- groovy
-- hirsute
-- impish
 subordinate: false
 requires:
   shared-db:
