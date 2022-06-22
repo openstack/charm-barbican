@@ -72,6 +72,9 @@ class TestBarbicanHandlers(test_utils.PatchHelper):
         handlers.render_stuff('arg1', 'arg2')
         barbican_charm.render_with_interfaces.assert_called_once_with(
             ('arg1', 'arg2', 'hsm'))
+        barbican_charm.configure_ssl.assert_called_once_with()
+        barbican_charm.upgrade_if_available.assert_called_once_with(
+            ('arg1', 'arg2'))
         barbican_charm.assess_status.assert_called_once_with()
 
     def test_secrets_plugin_configure(self):

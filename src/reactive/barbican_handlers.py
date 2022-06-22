@@ -59,6 +59,7 @@ def render_stuff(*args):
                                       'hsm.available',
                                       'secrets.available'))
         barbican_charm.configure_ssl()
+        barbican_charm.upgrade_if_available(args)
         barbican_charm.assess_status()
     reactive.set_flag('first-render')
 
