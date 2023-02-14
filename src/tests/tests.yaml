@@ -1,14 +1,15 @@
 charm_name: barbican
 smoke_bundles:
-- jammy-yoga
-gate_bundles:
-- jammy-yoga
-dev_bundles:
-- jammy-yoga
 - jammy-zed
+gate_bundles:
+- jammy-zed
+dev_bundles:
+- jammy-antelope
 - kinetic-zed
+- lunar-antelope
 tests:
 - zaza.openstack.charm_tests.barbican.tests.BarbicanTest
 tests_options:
   force_deploy:
     - kinetic-zed
+    - lunar-antelope

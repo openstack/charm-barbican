@@ -45,7 +45,7 @@ options:
     description: |
       Maximum allowed http request size against the barbican-api.
   openstack-origin:
-    default: zed
+    default: antelope
   use-internal-endpoints:
     default: True
     type: boolean

@@ -47,7 +47,7 @@ applications:
 
   barbican:
     series: *series
-    charm: ../../../barbican_ubuntu-22.04-amd64_ubuntu-22.10-amd64.charm
+    charm: ../../../barbican_ubuntu-22.04-amd64_ubuntu-22.10-amd64_ubuntu-23.04-amd64.charm
     num_units: 1
     options:
       openstack-origin: *openstack-origin

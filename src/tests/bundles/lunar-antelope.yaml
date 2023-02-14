@@ -1,9 +1,9 @@
 variables:
-  openstack-origin: &openstack-origin cloud:jammy-zed
+  openstack-origin: &openstack-origin distro
 
 local_overlay_enabled: False
 
-series: &series jammy
+series: &series lunar
 
 machines:
   '0':
