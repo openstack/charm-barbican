@@ -190,7 +190,7 @@
       "type": "python_module",
       "package": "charms.openstack",
       "url": "git+https://github.com/openstack/charms.openstack.git",
-      "branch": "refs/heads/stable/21.10",
+      "branch": "refs/heads/stable/xena",
       "version": "10627ee5f991c268f174d6d100e218a0e1867af1",
       "vcs": "git"
     },
@@ -210,7 +210,7 @@
       "type": "python_module",
       "package": "charmhelpers",
       "url": "git+https://github.com/juju/charm-helpers.git",
-      "branch": "refs/heads/stable/21.10",
+      "branch": "refs/heads/stable/xena",
       "version": "26efcd0da51d580f68ead2ca13c38f58766f8a14",
       "vcs": "git"
     },
@@ -231,6 +231,12 @@
       "package": "pyaml",
       "vcs": null,
       "version": "21.10.1"
+    },
+    {
+      "type": "python_module",
+      "package": "Cython",
+      "vcs": null,
+      "version": "0.29.36"
     }
   ]
 }
