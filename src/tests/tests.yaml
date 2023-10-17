@@ -5,11 +5,9 @@ gate_bundles:
 - jammy-antelope
 dev_bundles:
 - jammy-bobcat
-- lunar-antelope
 - mantic-bobcat
 tests:
 - zaza.openstack.charm_tests.barbican.tests.BarbicanTest
 tests_options:
   force_deploy:
-    - lunar-antelope
     - mantic-bobcat
