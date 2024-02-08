@@ -1,15 +1,14 @@
 charm_name: barbican
 smoke_bundles:
-- jammy-antelope
+  - jammy-caracal
 gate_bundles:
-- jammy-antelope
+  - jammy-antelope
+  - jammy-bobcat
+  - jammy-caracal
 dev_bundles:
-- jammy-bobcat
-- lunar-antelope
-- mantic-bobcat
+  - noble-caracal
 tests:
-- zaza.openstack.charm_tests.barbican.tests.BarbicanTest
+  - zaza.openstack.charm_tests.barbican.tests.BarbicanTest
 tests_options:
   force_deploy:
-    - lunar-antelope
-    - mantic-bobcat
+    - noble-caracal

@@ -6,11 +6,9 @@ description: |
   management of secrets such as passwords and encryption keys. It is aimed at
   being useful for all environments, including large ephemeral Clouds
 tags:
-- openstack
+  - openstack
 series:
-- jammy
-- lunar
-- mantic
+  - jammy
 subordinate: false
 requires:
   shared-db:
