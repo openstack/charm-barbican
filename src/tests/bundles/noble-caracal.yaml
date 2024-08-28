@@ -3,7 +3,7 @@ variables:
 
 local_overlay_enabled: False
 
-series: &series noble
+series: noble
 
 machines:
   '0':
@@ -43,11 +43,11 @@ applications:
       openstack-origin: *openstack-origin
     to:
       - '3'
-    channel: 2024.1/edge
+    channel: latest/edge
 
   barbican:
-    series: *series
-    charm: ../../../barbican_ubuntu-22.04-amd64.charm
+    series: noble
+    charm: ../../../barbican.charm
     num_units: 1
     options:
       openstack-origin: *openstack-origin

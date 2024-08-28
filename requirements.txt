@@ -13,7 +13,5 @@
 # * https://mail.python.org/pipermail/cryptography-dev/2021-January/001003.html
 #
 cryptography<3.4
-
 git+https://github.com/juju/charm-tools.git
-
 simplejson

@@ -7,8 +7,6 @@ description: |
   being useful for all environments, including large ephemeral Clouds
 tags:
   - openstack
-series:
-  - jammy
 subordinate: false
 requires:
   shared-db:

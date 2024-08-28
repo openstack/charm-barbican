@@ -45,7 +45,7 @@ options:
     description: |
       Maximum allowed http request size against the barbican-api.
   openstack-origin:
-    default: bobcat
+    default: caracal
   use-internal-endpoints:
     default: True
     type: boolean
