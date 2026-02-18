@@ -9,6 +9,9 @@ dev_bundles:
 - kinetic-zed
 tests:
 - zaza.openstack.charm_tests.barbican.tests.BarbicanTest
+- zaza.openstack.charm_tests.policyd.tests.BarbicanTests
 tests_options:
   force_deploy:
     - kinetic-zed
+  policyd:
+    service: barbican
