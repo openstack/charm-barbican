@@ -23,3 +23,8 @@ requires:
   secrets:
     interface: barbican-secrets
     optional: true
+resources:
+  policyd-override:
+    type: file
+    filename: policyd-override.zip
+    description: The policy.d overrides file

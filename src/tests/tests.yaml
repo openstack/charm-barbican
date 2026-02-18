@@ -9,6 +9,9 @@ dev_bundles:
   - noble-caracal
 tests:
   - zaza.openstack.charm_tests.barbican.tests.BarbicanTest
+  - zaza.openstack.charm_tests.policyd.tests.BarbicanTests
 tests_options:
   force_deploy:
     - noble-caracal
+  policyd:
+    service: barbican
