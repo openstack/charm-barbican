@@ -24,6 +24,7 @@ import charmhelpers.core.hookenv as hookenv
 import charms_openstack.charm
 import charms_openstack.adapters
 import charms_openstack.ip as os_ip
+import charms_openstack.plugins as ch_plugins
 
 PACKAGES = [
     'barbican-common', 'barbican-api', 'barbican-worker',
@@ -44,8 +45,10 @@ OPENSTACK_RELEASE_KEY = 'barbican-charm.openstack-release-version'
 
 
 # select the default release function
-charms_openstack.charm.use_defaults('charm.default-select-release')
-
+# config.changed is needed to get the policyd override clean-up to work when
+# setting use-policyd-override=false
+charms_openstack.charm.use_defaults('charm.default-select-release',
+                                    'config.changed')
 
 ###
 # Implementation of the Barbican Charm classes
@@ -54,6 +57,7 @@ charms_openstack.charm.use_defaults('charm.default-select-release')
 # for Barbican.  Note that the HSM relation is optional, so we have a class
 # variable 'exists' that we can test in the template to see if we should
 # render HSM parameters into the template.
+
 
 @charms_openstack.adapters.adapter_property('hsm')
 def library_path(hsm):
@@ -94,7 +98,8 @@ def plugins_string(secrets):
     return secrets.relation.plugins_string
 
 
-class BarbicanCharm(charms_openstack.charm.HAOpenStackCharm):
+class BarbicanCharm(ch_plugins.PolicydOverridePlugin,
+                    charms_openstack.charm.HAOpenStackCharm):
     """BarbicanCharm provides the specialisation of the OpenStackCharm
     functionality to manage a barbican unit.
     """
@@ -147,6 +152,10 @@ class BarbicanCharm(charms_openstack.charm.HAOpenStackCharm):
 
     # This is the command to sync the database
     sync_cmd = ['sudo', '-u', 'barbican', 'barbican-manage', 'db', 'upgrade']
+
+    # policyd override constants
+    policyd_service_name = 'barbican'
+    policyd_restart_on_change = True
 
     def get_amqp_credentials(self):
         """Provide the default amqp username and vhost as a tuple.

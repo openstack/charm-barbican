@@ -63,6 +63,29 @@ juju run-action generate-mkek
 Note that, depending on the HSM, it may only be possible to do this ONCE as the
 HSM may reject setting up the keys more than once.
 
+# Policy Overrides
+
+Policy overrides is an **advanced** feature that allows an operator to override the
+default policy of an OpenStack service. The policies that the service supports,
+the defaults it implements in its code, and the defaults that a charm may
+include should all be clearly understood before proceeding.
+
+> **Caution**: It is possible to break the system (for tenants and other
+  services) if policies are incorrectly applied to the service.
+
+Policy statements are placed in a YAML file. This file (or files) is then (ZIP)
+compressed into a single file and used as an application resource. The override
+is then enabled via a Boolean charm option.
+
+Here are the essential commands (filenames are arbitrary):
+
+    zip overrides.zip override-file.yaml
+    juju attach-resource barbican policyd-override=overrides.zip
+    juju config barbican use-policyd-override=true
+
+See appendix [Policy Overrides](https://docs.openstack.org/project-deploy-guide/charm-deployment-guide/latest/app-policy-overrides.html) in the [OpenStack Charms Deployment](https://docs.openstack.org/project-deploy-guide/charm-deployment-guide) Guide for a
+thorough treatment of this feature.
+
 # Developer Notes
 
 The Barbican charm has to be able to set `[crypto]` and `[xxx_plugin]` sections

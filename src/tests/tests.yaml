@@ -8,6 +8,9 @@ dev_bundles:
 - lunar-antelope
 tests:
 - zaza.openstack.charm_tests.barbican.tests.BarbicanTest
+- zaza.openstack.charm_tests.policyd.tests.BarbicanTests
 tests_options:
   force_deploy:
     - lunar-antelope
+  policyd:
+    service: barbican
