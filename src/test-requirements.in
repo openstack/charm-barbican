@@ -1,9 +1,9 @@
-# This file is managed centrally by release-tools and should not be modified
-# within individual charm repos.  See the 'global' dir contents for available
-# choices of *requirements.txt files for OpenStack Charms:
-#     https://github.com/openstack-charmers/release-tools
+# This file was originally managed centrally by release-tools but has been
+# locally modified and is no longer in sync with the central management system.
 #
 
 # Functional Test Requirements (let Zaza's dependencies solve all dependencies here!)
 git+https://github.com/openstack-charmers/zaza.git@stable/bobcat#egg=zaza
 git+https://github.com/openstack-charmers/zaza-openstack-tests.git@stable/bobcat#egg=zaza.openstack
+
+setuptools<82.0.0 # setuptools>=82 removed pkg_resources.
