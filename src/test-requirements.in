@@ -3,7 +3,8 @@
 #
 
 # Functional Test Requirements (let Zaza's dependencies solve all dependencies here!)
-git+https://github.com/openstack-charmers/zaza.git#egg=zaza
+zaza==2024.*
 git+https://github.com/openstack-charmers/zaza-openstack-tests.git#egg=zaza.openstack
 
-setuptools<82.0.0 # setuptools>=82 removed pkg_resources.
+setuptools<82.0.0
+git+https://github.com/juju/charm-tools.git

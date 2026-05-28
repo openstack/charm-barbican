@@ -9,7 +9,7 @@ stestr>=2.2.0
 # python3.12 [0], but can be substituted with setuptools.
 #
 # [0] https://docs.python.org/3.12/library/distutils.html
-setuptools
+setuptools<82.0.0
 
 requests>=2.18.4
 charms.reactive
@@ -35,3 +35,4 @@ cryptography<3.4 # vault, keystone-saml-mellon
 lxml             # keystone-saml-mellon
 hvac             # vault, barbican-vault
 psutil           # cinder-lvm
+flake8==7.1.1
