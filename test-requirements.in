@@ -9,7 +9,7 @@ stestr>=2.2.0
 # charms-reactive 1.5.3 (canonical/charms.reactive#263, fixed in PR #269).
 #
 # [0] https://docs.python.org/3.12/library/distutils.html
-setuptools<82
+setuptools<82.0.0
 
 requests>=2.18.4
 charms.reactive
@@ -35,3 +35,4 @@ cryptography<3.4 # vault, keystone-saml-mellon
 lxml             # keystone-saml-mellon
 hvac             # vault, barbican-vault
 psutil           # cinder-lvm
+flake8==7.1.1

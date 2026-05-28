@@ -5,12 +5,9 @@ gate_bundles:
 - jammy-antelope
 dev_bundles:
 - jammy-bobcat
-- mantic-bobcat
 tests:
 - zaza.openstack.charm_tests.barbican.tests.BarbicanTest
 - zaza.openstack.charm_tests.policyd.tests.BarbicanTests
 tests_options:
-  force_deploy:
-    - mantic-bobcat
   policyd:
     service: barbican
