@@ -12,6 +12,6 @@
 # * https://github.com/openstack-charmers/zaza/issues/421
 # * https://mail.python.org/pipermail/cryptography-dev/2021-January/001003.html
 #
-cryptography<3.4
+cryptography<46.1
 git+https://github.com/juju/charm-tools.git
 simplejson
