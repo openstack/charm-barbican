@@ -41,7 +41,7 @@ cryptography==3.3.2
     #   secretstorage
 dict2colander==0.2
     # via charm-tools
-distlib==0.4.0
+distlib==0.4.1
     # via virtualenv
 filelock==3.16.1
     # via virtualenv
