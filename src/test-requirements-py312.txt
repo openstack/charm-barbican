@@ -680,7 +680,7 @@ virtualenv==20.39.1
     # via charm-tools
 warlock==2.1.0
     # via python-glanceclient
-webob==1.8.9
+webob==1.8.10
     # via osprofiler
 websocket-client==1.9.0
     # via kubernetes
